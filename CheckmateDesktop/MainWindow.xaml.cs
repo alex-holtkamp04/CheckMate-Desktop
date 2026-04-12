@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using CheckmateDesktop.ViewUI;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,11 @@ namespace CheckmateDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
+        Board board;
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new BoardViewModel();
         }
     }
 }

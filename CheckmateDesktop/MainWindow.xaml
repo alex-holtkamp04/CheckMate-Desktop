@@ -6,7 +6,38 @@
         xmlns:local="clr-namespace:CheckmateDesktop"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Viewbox Stretch="Uniform" Margin="20">
+        <Border BorderBrush="#2C2C2C" BorderThickness="4" CornerRadius="2">
+            <ItemsControl ItemsSource="{Binding BoardSquares}">
 
-    </Grid>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="8" Columns="8" Width="640" Height="640" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{Binding SquareColorBrush}">
+
+                            <TextBlock Text="{Binding PieceUnicode}" 
+                                   Foreground="{Binding PieceColorBrush}"
+                                   FontSize="56" 
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   RenderTransformOrigin="0.5,0.5">
+
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+        </Border>
+    </Viewbox>
 </Window>
