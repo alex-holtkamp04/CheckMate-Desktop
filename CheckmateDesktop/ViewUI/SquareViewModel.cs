@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CheckmateDesktop
 {
-    public class SquareViewModel: INotifyPropertyChanged
+    public class SquareViewModel(ICommand bossCommand) : INotifyPropertyChanged
     {
         public SolidColorBrush SquareColorBrush { get; set; }
 
@@ -17,6 +18,8 @@ namespace CheckmateDesktop
         private Piece _currentPiece;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ICommand ClickCommand { get; } = bossCommand;
 
         public Piece CurrentPiece
         {

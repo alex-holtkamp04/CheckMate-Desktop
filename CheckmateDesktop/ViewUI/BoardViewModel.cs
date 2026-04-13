@@ -1,9 +1,12 @@
 ﻿using CheckmateDesktop.GameLogic;
 using CheckmateDesktop.GameLogic.Pieces;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 
@@ -13,6 +16,8 @@ namespace CheckmateDesktop.ViewUI
     {
         private Board gameBoard;
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
+
+        ICommand squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
 
         public BoardViewModel() 
         {
@@ -27,7 +32,7 @@ namespace CheckmateDesktop.ViewUI
                 bool isDarkSquare = (i / 8 + i % 8) % 2 != 0;
                 Piece? newPiece = GetStartingPiece(i);
 
-                BoardSquares.Add(new SquareViewModel
+                BoardSquares.Add(new SquareViewModel(squareClickCommand)
                 {
                     SquareColorBrush = isDarkSquare ? Brushes.SaddleBrown : Brushes.Wheat,
                     PieceColorBrush = (newPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black,
@@ -134,6 +139,11 @@ namespace CheckmateDesktop.ViewUI
                     return null;
             }
             return null;
+        }
+
+        private static void OnSquareClicked(SquareViewModel clickedSquare)
+        {
+            MessageBox.Show("clicked on " + clickedSquare.PieceUnicode);
         }
     }
 }

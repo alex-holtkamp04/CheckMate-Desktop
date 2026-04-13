@@ -18,22 +18,24 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{Binding SquareColorBrush}">
+                        <Button Command="{Binding ClickCommand}" CommandParameter="{Binding}">
 
-                            <TextBlock Text="{Binding PieceUnicode}" 
-                                   Foreground="{Binding PieceColorBrush}"
-                                   FontSize="56" 
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center"
-                                   RenderTransformOrigin="0.5,0.5">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{Binding SquareColorBrush}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+
+                            <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
 
                                 <TextBlock.Effect>
                                     <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
                                 </TextBlock.Effect>
                             </TextBlock>
 
-                        </Border>
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
