@@ -36,35 +36,40 @@ namespace CheckmateDesktop
                         {
                             BoardSquares[row, col] = new Rook
                             {
-                                Team = Piece.TeamColor.Black
+                                Team = Piece.TeamColor.Black,
+                                isFirstMove = true
                             };
                         }
                         if (col == 1 || col == 6)
                         {
                             BoardSquares[row, col] = new Knight
                             {
-                                Team = Piece.TeamColor.Black
+                                Team = Piece.TeamColor.Black,
+                                isFirstMove = true
                             };
                         }
                         if (col == 2 || col == 5)
                         {
                             BoardSquares[row, col] = new Bishop
                             {
-                                Team = Piece.TeamColor.Black
+                                Team = Piece.TeamColor.Black,
+                                isFirstMove = true
                             };
                         }
                         if (col == 3)
                         {
                             BoardSquares[row, col] = new Queen
                             {
-                                Team = Piece.TeamColor.Black
+                                Team = Piece.TeamColor.Black,
+                                isFirstMove = true
                             };
                         }
                         if (col == 4)
                         {
                             BoardSquares[row, col] = new King
                             {
-                                Team = Piece.TeamColor.Black
+                                Team = Piece.TeamColor.Black,
+                                isFirstMove = true
                             };
                         }
                         break;
@@ -72,14 +77,16 @@ namespace CheckmateDesktop
                     case 1:
                         BoardSquares[row, col] = new Pawn
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black,
+                            isFirstMove = true
                         };
                         break;
 
                     case 6:
                         BoardSquares[row, col] = new Pawn
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                         break;
 
@@ -88,35 +95,40 @@ namespace CheckmateDesktop
                         {
                             BoardSquares[row, col] = new Rook
                             {
-                                Team = Piece.TeamColor.White
+                                Team = Piece.TeamColor.White,
+                                isFirstMove = true
                             };
                         }
                         if (col == 1 || col == 6)
                         {
                             BoardSquares[row, col] = new Knight
                             {
-                                Team = Piece.TeamColor.White
+                                Team = Piece.TeamColor.White,
+                                isFirstMove = true
                             };
                         }
                         if (col == 2 || col == 5)
                         {
                             BoardSquares[row, col] = new Bishop
                             {
-                                Team = Piece.TeamColor.White
+                                Team = Piece.TeamColor.White,
+                                isFirstMove = true
                             };
                         }
                         if (col == 3)
                         {
                             BoardSquares[row, col] = new Queen
                             {
-                                Team = Piece.TeamColor.White
+                                Team = Piece.TeamColor.White,
+                                isFirstMove = true
                             };
                         }
                         if (col == 4)
                         {
                             BoardSquares[row, col] = new King
                             {
-                                Team = Piece.TeamColor.White
+                                Team = Piece.TeamColor.White,
+                                isFirstMove = true
                             };
                         }
                         break;

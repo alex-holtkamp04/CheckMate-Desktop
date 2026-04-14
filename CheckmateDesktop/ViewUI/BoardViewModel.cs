@@ -58,35 +58,40 @@ namespace CheckmateDesktop.ViewUI
                     {
                         return new Rook
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black, 
+                            isFirstMove = true
                         };
                     }
                     if (col == 1 || col == 6)
                     {
                         return new Knight
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black,
+                            isFirstMove = true
                         };
                     }
                     if (col == 2 || col == 5)
                     {
                         return new Bishop
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black,
+                            isFirstMove = true
                         };
                     }
                     if (col == 3)
                     {
                         return new Queen
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black,
+                            isFirstMove = true
                         };
                     }
                     if (col == 4)
                     {
                         return new King
                         {
-                            Team = Piece.TeamColor.Black
+                            Team = Piece.TeamColor.Black,
+                            isFirstMove = true
                         };
                     }
                     break;
@@ -94,13 +99,15 @@ namespace CheckmateDesktop.ViewUI
                 case 1:
                     return new Pawn
                     {
-                        Team = Piece.TeamColor.Black
+                        Team = Piece.TeamColor.Black,
+                        isFirstMove = true
                     };
 
                 case 6:
                     return new Pawn
                     {
-                        Team = Piece.TeamColor.White
+                        Team = Piece.TeamColor.White,
+                        isFirstMove = true
                     };
 
                 case 7:
@@ -108,35 +115,40 @@ namespace CheckmateDesktop.ViewUI
                     {
                         return new Rook
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                     }
                     if (col == 1 || col == 6)
                     {
                         return new Knight
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                     }
                     if (col == 2 || col == 5)
                     {
                         return new Bishop
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                     }
                     if (col == 3)
                     {
                         return new Queen
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                     }
                     if (col == 4)
                     {
                         return new King
                         {
-                            Team = Piece.TeamColor.White
+                            Team = Piece.TeamColor.White,
+                            isFirstMove = true
                         };
                     }
                     break;
