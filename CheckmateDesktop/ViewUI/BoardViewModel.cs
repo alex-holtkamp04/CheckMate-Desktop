@@ -14,7 +14,8 @@ namespace CheckmateDesktop.ViewUI
 {
     public class BoardViewModel
     {
-        private Board gameBoard;
+        private static Board gameBoard;
+
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
 
         private static SquareViewModel? selectedSquare = null;
@@ -41,8 +42,7 @@ namespace CheckmateDesktop.ViewUI
                     SquareColorBrush = isDarkSquare ? Brushes.SaddleBrown : Brushes.Wheat,
                     PieceColorBrush = (newPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black,
                     CurrentPiece = newPiece,
-                    Row = i / 8,
-                    Column = i % 8,
+                    Position = new Position(i % 8, i / 8)
                 });
             }
         }
@@ -154,16 +154,18 @@ namespace CheckmateDesktop.ViewUI
                 selectedSquare = clickedSquare;
                 selectedSquareBaseColor = clickedSquare.SquareColorBrush;
                 clickedSquare.SquareColorBrush = Brushes.SteelBlue;
-
-                MessageBox.Show("clicked on " + clickedSquare.Column + ", " + clickedSquare.Row);
             }
             else
             {
-                MessageBox.Show("moved to " + clickedSquare.Column + ", " + clickedSquare.Row);
-
-                selectedSquare.SquareColorBrush = selectedSquareBaseColor;
-                selectedSquareBaseColor = null;
-                selectedSquare = null;
+                if (gameBoard.isValidMove(selectedSquare.CurrentPiece, selectedSquare.Position, clickedSquare.Position))
+                {
+                    clickedSquare.CurrentPiece = selectedSquare.CurrentPiece;
+                    selectedSquare.CurrentPiece = null;
+                    
+                    selectedSquare.SquareColorBrush = selectedSquareBaseColor;
+                    selectedSquareBaseColor = null;
+                    selectedSquare = null;
+                }
             }
         }
     }

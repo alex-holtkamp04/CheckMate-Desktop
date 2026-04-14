@@ -37,12 +37,12 @@ namespace CheckmateDesktop
             {
                 _currentPiece = value;
                 OnPropertyChanged(nameof(CurrentPiece));
+                OnPropertyChanged(nameof(PieceUnicode));
 
             }
         }
 
-        public int Row { get; set; }
-        public int Column { get; set; }
+        public required Position Position { get; set; }
 
         public string PieceUnicode 
         { 

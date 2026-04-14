@@ -127,5 +127,10 @@ namespace CheckmateDesktop
                 }
             }
         }
+        
+        public bool isValidMove(Piece piece, Position from, Position to)
+        {
+            return true;
+        }
     }
 }
