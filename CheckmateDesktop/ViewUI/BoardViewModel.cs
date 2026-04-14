@@ -17,11 +17,14 @@ namespace CheckmateDesktop.ViewUI
         private Board gameBoard;
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
 
+        private static SquareViewModel? selectedSquare = null;
+
         ICommand squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
 
         public BoardViewModel() 
         {
             BoardSquares = new ObservableCollection<SquareViewModel>();
+            gameBoard = new Board();
             InitializeBoard();
         }
 
@@ -143,7 +146,16 @@ namespace CheckmateDesktop.ViewUI
 
         private static void OnSquareClicked(SquareViewModel clickedSquare)
         {
-            MessageBox.Show("clicked on " + clickedSquare.PieceUnicode);
+            if (selectedSquare == null)
+            {
+                selectedSquare = clickedSquare;
+                MessageBox.Show("clicked on " + clickedSquare.PieceUnicode);
+            }
+            else
+            {
+                MessageBox.Show("moved " + selectedSquare.PieceUnicode + " to square ");
+                selectedSquare = null;
+            }
         }
     }
 }

@@ -34,35 +34,35 @@ namespace CheckmateDesktop
                     case 0:
                         if (col == 0 || col == 7)
                         {
-                            BoardSquares[row, index] = new Rook
+                            BoardSquares[row, col] = new Rook
                             {
                                 Team = Piece.TeamColor.Black
                             };
                         }
                         if (col == 1 || col == 6)
                         {
-                            BoardSquares[row, index] = new Knight
+                            BoardSquares[row, col] = new Knight
                             {
                                 Team = Piece.TeamColor.Black
                             };
                         }
                         if (col == 2 || col == 5)
                         {
-                            BoardSquares[row, index] = new Bishop
+                            BoardSquares[row, col] = new Bishop
                             {
                                 Team = Piece.TeamColor.Black
                             };
                         }
                         if (col == 3)
                         {
-                            BoardSquares[row, index] = new Queen
+                            BoardSquares[row, col] = new Queen
                             {
                                 Team = Piece.TeamColor.Black
                             };
                         }
                         if (col == 4)
                         {
-                            BoardSquares[row, index] = new King
+                            BoardSquares[row, col] = new King
                             {
                                 Team = Piece.TeamColor.Black
                             };
@@ -70,14 +70,14 @@ namespace CheckmateDesktop
                         break;
 
                     case 1:
-                        BoardSquares[row, index] = new Pawn
+                        BoardSquares[row, col] = new Pawn
                         {
                             Team = Piece.TeamColor.Black
                         };
                         break;
 
                     case 6:
-                        BoardSquares[row, index] = new Pawn
+                        BoardSquares[row, col] = new Pawn
                         {
                             Team = Piece.TeamColor.White
                         };
@@ -86,35 +86,35 @@ namespace CheckmateDesktop
                     case 7:
                         if (col == 0 || col == 7)
                         {
-                            BoardSquares[row, index] = new Rook
+                            BoardSquares[row, col] = new Rook
                             {
                                 Team = Piece.TeamColor.White
                             };
                         }
                         if (col == 1 || col == 6)
                         {
-                            BoardSquares[row, index] = new Knight
+                            BoardSquares[row, col] = new Knight
                             {
                                 Team = Piece.TeamColor.White
                             };
                         }
                         if (col == 2 || col == 5)
                         {
-                            BoardSquares[row, index] = new Bishop
+                            BoardSquares[row, col] = new Bishop
                             {
                                 Team = Piece.TeamColor.White
                             };
                         }
                         if (col == 3)
                         {
-                            BoardSquares[row, index] = new Queen
+                            BoardSquares[row, col] = new Queen
                             {
                                 Team = Piece.TeamColor.White
                             };
                         }
                         if (col == 4)
                         {
-                            BoardSquares[row, index] = new King
+                            BoardSquares[row, col] = new King
                             {
                                 Team = Piece.TeamColor.White
                             };
@@ -122,7 +122,7 @@ namespace CheckmateDesktop
                         break;
 
                     default:
-                        BoardSquares[row, index] = null;
+                        BoardSquares[row, col] = null;
                         break;
                 }
             }
