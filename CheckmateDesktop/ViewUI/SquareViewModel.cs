@@ -11,16 +11,22 @@ namespace CheckmateDesktop
 {
     public class SquareViewModel(ICommand bossCommand) : INotifyPropertyChanged
     {
-        public SolidColorBrush SquareColorBrush { get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private SolidColorBrush _squareColorBrush;
+        public SolidColorBrush SquareColorBrush
+        {
+            get { return _squareColorBrush; }
+            set
+            {
+                _squareColorBrush = value;
+                OnPropertyChanged(nameof(SquareColorBrush));
+            }
+        }
 
         public SolidColorBrush PieceColorBrush { get; set; }
 
         private Piece _currentPiece;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public ICommand ClickCommand { get; } = bossCommand;
-
         public Piece CurrentPiece
         {
             get
@@ -34,6 +40,9 @@ namespace CheckmateDesktop
 
             }
         }
+
+        public int Row { get; set; }
+        public int Column { get; set; }
 
         public string PieceUnicode 
         { 
@@ -62,9 +71,11 @@ namespace CheckmateDesktop
             }
         }
 
+        public ICommand ClickCommand { get; } = bossCommand;
+
         private void OnPropertyChanged(string propertyName)
         {
-
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }

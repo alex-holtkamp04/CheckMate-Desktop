@@ -18,6 +18,7 @@ namespace CheckmateDesktop.ViewUI
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
 
         private static SquareViewModel? selectedSquare = null;
+        private static SolidColorBrush? selectedSquareBaseColor = null;
 
         ICommand squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
 
@@ -39,7 +40,9 @@ namespace CheckmateDesktop.ViewUI
                 {
                     SquareColorBrush = isDarkSquare ? Brushes.SaddleBrown : Brushes.Wheat,
                     PieceColorBrush = (newPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black,
-                    CurrentPiece = newPiece
+                    CurrentPiece = newPiece,
+                    Row = i / 8,
+                    Column = i % 8,
                 });
             }
         }
@@ -149,11 +152,17 @@ namespace CheckmateDesktop.ViewUI
             if (selectedSquare == null)
             {
                 selectedSquare = clickedSquare;
-                MessageBox.Show("clicked on " + clickedSquare.PieceUnicode);
+                selectedSquareBaseColor = clickedSquare.SquareColorBrush;
+                clickedSquare.SquareColorBrush = Brushes.SteelBlue;
+
+                MessageBox.Show("clicked on " + clickedSquare.Column + ", " + clickedSquare.Row);
             }
             else
             {
-                MessageBox.Show("moved " + selectedSquare.PieceUnicode + " to square ");
+                MessageBox.Show("moved to " + clickedSquare.Column + ", " + clickedSquare.Row);
+
+                selectedSquare.SquareColorBrush = selectedSquareBaseColor;
+                selectedSquareBaseColor = null;
                 selectedSquare = null;
             }
         }
