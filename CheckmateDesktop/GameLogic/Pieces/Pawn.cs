@@ -6,6 +6,11 @@ namespace CheckmateDesktop.GameLogic.Pieces
 {
     public class Pawn : Piece
     {
+        // Set the value of the pawn to 1
+        public Pawn()
+        {
+            Value = 1;
+        }
         public override List<Position> GetValidMoves(Board currentBoard, Position currentPosition)
         {
             List<Position> ValidMoves = new List<Position>();
@@ -35,7 +40,22 @@ namespace CheckmateDesktop.GameLogic.Pieces
                 }
             }
 
-            // TODO: Add Logic for capturing pieces diagonally and en passant
+            // Logic for capturing pieces diagonally
+            int[] diagonalOffsets = { -1, 1 }; // Left and right diagonal
+            foreach (int offset in diagonalOffsets)
+            {
+                Position diagonalPosition = new Position(nextLetter, currentPosition.Number + offset);
+                if (IsInBounds(diagonalPosition))
+                {
+                    Piece pieceAtDiagonal = currentBoard.GetPiece(diagonalPosition);
+                    if (pieceAtDiagonal != null && pieceAtDiagonal.Team != Team)
+                    {
+                        ValidMoves.Add(diagonalPosition);
+                    }
+                }
+            }
+
+            // TODO: Add Logic for en passant
 
             return ValidMoves;
         }

@@ -10,6 +10,8 @@ namespace CheckmateDesktop.GameLogic
 
         public TeamColor Team { get; set; }
 
+        public int Value { get; protected set; }
+
         public bool isFirstMove;
 
         public abstract List<Position> GetValidMoves(Board currentBoard, Position currentPosition);

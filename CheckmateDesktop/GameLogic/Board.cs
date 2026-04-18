@@ -6,6 +6,7 @@ using System.IO.Pipelines;
 using System.Text;
 using System.Windows.Media;
 using static CheckmateDesktop.GameLogic.Piece;
+using System.Diagnostics;
 
 namespace CheckmateDesktop
 {
@@ -16,6 +17,36 @@ namespace CheckmateDesktop
         Piece[,] BoardSquares;
 
         TeamColor ActivePlayer;
+
+        public int whiteValue, blackValue;
+
+        // Loop through the board and calculate the total value of pieces for each player
+        public void CalculateScores()
+        {
+            whiteValue = 0;
+            blackValue = 0;
+
+            for (int letter = 0; letter < 8; letter++)
+            {
+                for (int number = 0; number < 8; number++)
+                {
+                    Piece piece = BoardSquares[letter, number];
+                    if (piece != null)
+                    {
+                        if (piece.Team == TeamColor.White)
+                        {
+                            whiteValue += piece.Value;
+                        }
+                        else if (piece.Team == TeamColor.Black)
+                        {
+                            blackValue += piece.Value;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Constructor to initialize the board with pieces in their starting positions
         public Board()
         {
             ActivePlayer = TeamColor.White;
@@ -158,9 +189,10 @@ namespace CheckmateDesktop
         public bool isValidMove(Piece piece, Position from, Position to)
         {
 
-            // Checks if there is a piece at the from position and if it belongs to the active player
-            if (GetPiece(from) == null || GetPiece(from).Team != ActivePlayer)
+            // Checks if the piece being moved belongs to the active player
+            if (GetPiece(from).Team != ActivePlayer)
             {
+                Debug.WriteLine("Invalid move: piece does not belong to active player.");
                 return false;
             }
 

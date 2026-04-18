@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Media;
 
+
 namespace CheckmateDesktop
 {
     public class SquareViewModel(ICommand bossCommand) : INotifyPropertyChanged

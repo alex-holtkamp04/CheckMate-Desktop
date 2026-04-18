@@ -167,12 +167,11 @@ namespace CheckmateDesktop.ViewUI
         private static void OnSquareClicked(SquareViewModel clickedSquare)
         {
 
-           if (clickedSquare.CurrentPiece != null)
+            if (clickedSquare.CurrentPiece != null)
             {
                 Debug.WriteLine($"Piece on square: {clickedSquare.CurrentPiece.GetType().Name} ({clickedSquare.CurrentPiece.Team})");
             }
-
-            else if(selectedSquare == null)
+            else if (selectedSquare == null)
             {
                 Debug.WriteLine("No piece on clicked square");
                 return;
@@ -216,8 +215,11 @@ namespace CheckmateDesktop.ViewUI
                 clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
                 selectedSquare.CurrentPiece = null;
             }
-            
+
             ClearSelection();
+
+            gameBoard.CalculateScores();
+            Debug.WriteLine($"The Current Score is: White: {gameBoard.whiteValue} - Black: {gameBoard.blackValue}");
 
         }
 
