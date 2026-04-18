@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
+using System.Diagnostics;
 
 namespace CheckmateDesktop.ViewUI
 {
@@ -23,7 +24,7 @@ namespace CheckmateDesktop.ViewUI
 
         ICommand squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
 
-        public BoardViewModel() 
+        public BoardViewModel()
         {
             BoardSquares = new ObservableCollection<SquareViewModel>();
             gameBoard = new Board();
@@ -34,35 +35,39 @@ namespace CheckmateDesktop.ViewUI
         {
             for (int i = 0; i < 64; i++)
             {
-                bool isDarkSquare = (i / 8 + i % 8) % 2 != 0;
-                Piece? newPiece = GetStartingPiece(i);
+                int Letter = i / 8;
+                int Number = i % 8;
+
+                bool isDarkSquare = (Letter + Number) % 2 != 0;
+
+                var piece = gameBoard.GetPiece(new Position(Letter, Number));
 
                 BoardSquares.Add(new SquareViewModel(squareClickCommand)
                 {
                     SquareColorBrush = isDarkSquare ? Brushes.SaddleBrown : Brushes.Wheat,
-                    PieceColorBrush = (newPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black,
-                    CurrentPiece = newPiece,
-                    Position = new Position(i % 8, i / 8)
+                    PieceColorBrush = (piece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black,
+                    CurrentPiece = piece,
+                    Position = new Position(Letter, Number)
                 });
             }
         }
 
         private Piece? GetStartingPiece(int index)
         {
-            int row = index / 8;
-            int col = index % 8;
-            switch (row)
+            int Letter = index / 8;
+            int Number = index % 8;
+            switch (Letter)
             {
                 case 0:
-                    if (col == 0 || col == 7)
+                    if (Number == 0 || Number == 7)
                     {
                         return new Rook
                         {
-                            Team = Piece.TeamColor.Black, 
+                            Team = Piece.TeamColor.Black,
                             isFirstMove = true
                         };
                     }
-                    if (col == 1 || col == 6)
+                    if (Number == 1 || Number == 6)
                     {
                         return new Knight
                         {
@@ -70,7 +75,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 2 || col == 5)
+                    if (Number == 2 || Number == 5)
                     {
                         return new Bishop
                         {
@@ -78,7 +83,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 3)
+                    if (Number == 3)
                     {
                         return new Queen
                         {
@@ -86,7 +91,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 4)
+                    if (Number == 4)
                     {
                         return new King
                         {
@@ -111,7 +116,7 @@ namespace CheckmateDesktop.ViewUI
                     };
 
                 case 7:
-                    if (col == 0 || col == 7)
+                    if (Number == 0 || Number == 7)
                     {
                         return new Rook
                         {
@@ -119,7 +124,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 1 || col == 6)
+                    if (Number == 1 || Number == 6)
                     {
                         return new Knight
                         {
@@ -127,7 +132,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 2 || col == 5)
+                    if (Number == 2 || Number == 5)
                     {
                         return new Bishop
                         {
@@ -135,7 +140,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 3)
+                    if (Number == 3)
                     {
                         return new Queen
                         {
@@ -143,7 +148,7 @@ namespace CheckmateDesktop.ViewUI
                             isFirstMove = true
                         };
                     }
-                    if (col == 4)
+                    if (Number == 4)
                     {
                         return new King
                         {
@@ -161,24 +166,72 @@ namespace CheckmateDesktop.ViewUI
 
         private static void OnSquareClicked(SquareViewModel clickedSquare)
         {
+
+           if (clickedSquare.CurrentPiece != null)
+            {
+                Debug.WriteLine($"Piece on square: {clickedSquare.CurrentPiece.GetType().Name} ({clickedSquare.CurrentPiece.Team})");
+            }
+
+            else if(selectedSquare == null)
+            {
+                Debug.WriteLine("No piece on clicked square");
+                return;
+            }
+
             if (selectedSquare == null)
             {
                 selectedSquare = clickedSquare;
+
+                Debug.WriteLine($"SELECTED FIRST SQUARE: {selectedSquare.Position.Letter},{selectedSquare.Position.Number}");
+                Debug.WriteLine($"Selected piece: {selectedSquare.CurrentPiece?.GetType().Name}");
+
                 selectedSquareBaseColor = clickedSquare.SquareColorBrush;
                 clickedSquare.SquareColorBrush = Brushes.SteelBlue;
+                return;
             }
-            else
+
+            Debug.WriteLine($"TRY MOVE: {selectedSquare.Position.Letter},{selectedSquare.Position.Number} -> {clickedSquare.Position.Letter},{clickedSquare.Position.Number}");
+            Piece piece = selectedSquare.CurrentPiece;
+
+            if (piece == null)
             {
-                if (gameBoard.isValidMove(selectedSquare.CurrentPiece, selectedSquare.Position, clickedSquare.Position))
-                {
-                    clickedSquare.CurrentPiece = selectedSquare.CurrentPiece;
-                    selectedSquare.CurrentPiece = null;
-                    
-                    selectedSquare.SquareColorBrush = selectedSquareBaseColor;
-                    selectedSquareBaseColor = null;
-                    selectedSquare = null;
-                }
+                Debug.WriteLine("ERROR: No piece selected");
+                ClearSelection();
+                return;
             }
+
+            bool isValid = gameBoard.isValidMove(
+                piece,
+                selectedSquare.Position,
+                clickedSquare.Position
+            );
+
+            Debug.WriteLine($"isValidMove returned: {isValid}");
+
+            if (isValid)
+            {
+                gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position);
+
+                clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
+                clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
+                selectedSquare.CurrentPiece = null;
+            }
+            
+            ClearSelection();
+
+        }
+
+        private static void ClearSelection()
+        {
+            if (selectedSquare != null)
+            {
+                selectedSquare.SquareColorBrush = selectedSquareBaseColor;
+            }
+
+            selectedSquare = null;
+            selectedSquareBaseColor = null;
+
+            Debug.WriteLine("SELECTION RESET");
         }
     }
 }

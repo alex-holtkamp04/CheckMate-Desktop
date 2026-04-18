@@ -24,7 +24,19 @@ namespace CheckmateDesktop
             }
         }
 
-        public SolidColorBrush PieceColorBrush { get; set; }
+
+        private SolidColorBrush _pieceColorBrush;
+        public SolidColorBrush PieceColorBrush {
+            get
+            {
+                return _pieceColorBrush;
+            }
+            set
+            {
+                _pieceColorBrush = value;
+                OnPropertyChanged(nameof(PieceColorBrush));
+            }
+        }
 
         private Piece _currentPiece;
         public Piece CurrentPiece

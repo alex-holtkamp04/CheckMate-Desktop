@@ -23,6 +23,21 @@ namespace CheckmateDesktop
             setupBoard();
         }
 
+        // Functions to get and set pieces on the board
+        public Piece GetPiece(Position pos)
+        {
+            return BoardSquares[pos.Letter, pos.Number];
+        }
+
+        public void SetPiece(Position pos, Piece piece, TeamColor team)
+        {
+            if (piece != null)
+            {
+                piece.Team = team;
+            }
+            BoardSquares[pos.Letter, pos.Number] = piece;
+        }
+
         private void setupBoard()
         {
             for (int index = 0; index < 64; index++)
@@ -139,10 +154,43 @@ namespace CheckmateDesktop
                 }
             }
         }
-        
+
         public bool isValidMove(Piece piece, Position from, Position to)
         {
-            return true;
+
+            // Checks if there is a piece at the from position and if it belongs to the active player
+            if (GetPiece(from) == null || GetPiece(from).Team != ActivePlayer)
+            {
+                return false;
+            }
+
+            // Get the valid moves for the piece and check if the to position is in the list of valid moves
+            List<Position> validMoves = piece.GetValidMoves(this, from);
+
+            bool result = validMoves.Any(move => move.Letter == to.Letter && move.Number == to.Number);
+
+            // Return if the selected move is valid or not
+            return result;
+        }
+
+        // Function to move the piece on the board
+        public void MovePiece(Position from, Position to)
+        {
+            // Get the piece to move
+            Piece pieceToMove = GetPiece(from);
+
+            // Set the piece to the new position
+            SetPiece(to, pieceToMove, pieceToMove.Team);
+            // Clear the old position
+            SetPiece(from, null, TeamColor.None);
+
+            if (pieceToMove != null)
+            {
+                pieceToMove.isFirstMove = false;
+            }
+
+            // Switch the active player
+            ActivePlayer = ActivePlayer == TeamColor.White ? TeamColor.Black : TeamColor.White;
         }
     }
 }
