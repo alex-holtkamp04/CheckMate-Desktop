@@ -31,17 +31,23 @@ namespace CheckmateDesktop.ViewUI
             InitializeBoard();
         }
 
+        // Function that initializes the board on the front end
         private void InitializeBoard()
         {
+            // loop through 64 tiles linearly
             for (int i = 0; i < 64; i++)
             {
+                // convert to 2D array values
                 int Letter = i / 8;
                 int Number = i % 8;
 
+                // make classic dark-light chess board pattern
                 bool isDarkSquare = (Letter + Number) % 2 != 0;
 
+                // we can use the backend board to get the piece at the tile
                 var piece = gameBoard.GetPiece(new Position(Letter, Number));
 
+                // create the frontend square and add it to array of squares
                 BoardSquares.Add(new SquareViewModel(squareClickCommand)
                 {
                     SquareColorBrush = isDarkSquare ? Brushes.SaddleBrown : Brushes.Wheat,
@@ -52,131 +58,24 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
-        private Piece? GetStartingPiece(int index)
-        {
-            int Letter = index / 8;
-            int Number = index % 8;
-            switch (Letter)
-            {
-                case 0:
-                    if (Number == 0 || Number == 7)
-                    {
-                        return new Rook
-                        {
-                            Team = Piece.TeamColor.Black,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 1 || Number == 6)
-                    {
-                        return new Knight
-                        {
-                            Team = Piece.TeamColor.Black,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 2 || Number == 5)
-                    {
-                        return new Bishop
-                        {
-                            Team = Piece.TeamColor.Black,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 3)
-                    {
-                        return new Queen
-                        {
-                            Team = Piece.TeamColor.Black,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 4)
-                    {
-                        return new King
-                        {
-                            Team = Piece.TeamColor.Black,
-                            isFirstMove = true
-                        };
-                    }
-                    break;
-
-                case 1:
-                    return new Pawn
-                    {
-                        Team = Piece.TeamColor.Black,
-                        isFirstMove = true
-                    };
-
-                case 6:
-                    return new Pawn
-                    {
-                        Team = Piece.TeamColor.White,
-                        isFirstMove = true
-                    };
-
-                case 7:
-                    if (Number == 0 || Number == 7)
-                    {
-                        return new Rook
-                        {
-                            Team = Piece.TeamColor.White,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 1 || Number == 6)
-                    {
-                        return new Knight
-                        {
-                            Team = Piece.TeamColor.White,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 2 || Number == 5)
-                    {
-                        return new Bishop
-                        {
-                            Team = Piece.TeamColor.White,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 3)
-                    {
-                        return new Queen
-                        {
-                            Team = Piece.TeamColor.White,
-                            isFirstMove = true
-                        };
-                    }
-                    if (Number == 4)
-                    {
-                        return new King
-                        {
-                            Team = Piece.TeamColor.White,
-                            isFirstMove = true
-                        };
-                    }
-                    break;
-
-                default:
-                    return null;
-            }
-            return null;
-        }
-
+        // Function that runs when the player clicks on a square
         private static void OnSquareClicked(SquareViewModel clickedSquare)
         {
-
+            // DEBUG MESSAGES:
+            //
+            // If the plaeyr clicks on a square with a piece, display it
             if (clickedSquare.CurrentPiece != null)
             {
                 Debug.WriteLine($"Piece on square: {clickedSquare.CurrentPiece.GetType().Name} ({clickedSquare.CurrentPiece.Team})");
             }
             else if (selectedSquare == null)
             {
+                // if player clicks square without piece, print this debug message
                 Debug.WriteLine("No piece on clicked square");
                 return;
             }
 
+            // If the player has not already selected a square (I.E. they're clicking the piece they want to move)
             if (selectedSquare == null)
             {
                 selectedSquare = clickedSquare;
@@ -189,9 +88,12 @@ namespace CheckmateDesktop.ViewUI
                 return;
             }
 
+            // Debug Message
             Debug.WriteLine($"TRY MOVE: {selectedSquare.Position.Letter},{selectedSquare.Position.Number} -> {clickedSquare.Position.Letter},{clickedSquare.Position.Number}");
             Piece piece = selectedSquare.CurrentPiece;
 
+            // If the square the player selected on their first click had nothing, there's no piece selected --> can't move
+            // print debug message
             if (piece == null)
             {
                 Debug.WriteLine("ERROR: No piece selected");
@@ -199,6 +101,7 @@ namespace CheckmateDesktop.ViewUI
                 return;
             }
 
+            // check if move is valid
             bool isValid = gameBoard.isValidMove(
                 piece,
                 selectedSquare.Position,
@@ -207,6 +110,7 @@ namespace CheckmateDesktop.ViewUI
 
             Debug.WriteLine($"isValidMove returned: {isValid}");
 
+            // if move is valid, move the piece
             if (isValid)
             {
                 gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position);
@@ -218,11 +122,14 @@ namespace CheckmateDesktop.ViewUI
 
             ClearSelection();
 
+            // in case the player captured a piece, update the score
             gameBoard.CalculateScores();
             Debug.WriteLine($"The Current Score is: White: {gameBoard.whiteValue} - Black: {gameBoard.blackValue}");
 
         }
 
+        // Function that clears the selected square in memory
+        // ensures that squares maintain their correct color
         private static void ClearSelection()
         {
             if (selectedSquare != null)

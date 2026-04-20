@@ -69,14 +69,18 @@ namespace CheckmateDesktop
             BoardSquares[pos.Letter, pos.Number] = piece;
         }
 
+        // Function that sets the correct starting pieces on the board 
         private void setupBoard()
         {
+            // do a linear loop
             for (int index = 0; index < 64; index++)
             {
+                // adjust linear loop to 2D array values
                 int row = index / 8;
                 int col = index % 8;
                 switch (row)
                 {
+                    // Firest row is Black's back row
                     case 0:
                         if (col == 0 || col == 7)
                         {
@@ -120,6 +124,7 @@ namespace CheckmateDesktop
                         }
                         break;
 
+                    // Second row are Black's pawnns
                     case 1:
                         BoardSquares[row, col] = new Pawn
                         {
@@ -128,6 +133,7 @@ namespace CheckmateDesktop
                         };
                         break;
 
+                    // Seventh row are White's pawns
                     case 6:
                         BoardSquares[row, col] = new Pawn
                         {
@@ -136,6 +142,7 @@ namespace CheckmateDesktop
                         };
                         break;
 
+                    // Eighth row is White's back row
                     case 7:
                         if (col == 0 || col == 7)
                         {
@@ -179,6 +186,7 @@ namespace CheckmateDesktop
                         }
                         break;
 
+                    // default case for null for all the other squares without starting pieces
                     default:
                         BoardSquares[row, col] = null;
                         break;

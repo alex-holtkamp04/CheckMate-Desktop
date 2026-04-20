@@ -14,6 +14,7 @@ namespace CheckmateDesktop
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // property that sets the color of a tile on the front end
         private SolidColorBrush _squareColorBrush;
         public SolidColorBrush SquareColorBrush
         {
@@ -26,6 +27,7 @@ namespace CheckmateDesktop
         }
 
 
+        // property that sets the color of a piece on the front end
         private SolidColorBrush _pieceColorBrush;
         public SolidColorBrush PieceColorBrush {
             get
@@ -39,6 +41,7 @@ namespace CheckmateDesktop
             }
         }
 
+        // The current Piece on the tile
         private Piece _currentPiece;
         public Piece CurrentPiece
         {
@@ -48,12 +51,14 @@ namespace CheckmateDesktop
             }
             set
             {
+                // when we change the piece, update this Piece property AND the string representation
                 _currentPiece = value;
                 OnPropertyChanged(nameof(CurrentPiece));
                 OnPropertyChanged(nameof(PieceUnicode));
 
             }
         }
+
 
         public required Position Position { get; set; }
 
