@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Media;
 using static CheckmateDesktop.GameLogic.Piece;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace CheckmateDesktop
 {
@@ -19,6 +20,9 @@ namespace CheckmateDesktop
         TeamColor ActivePlayer;
 
         public int whiteValue, blackValue;
+
+        Position WhiteKing;
+        Position BlackKing;
 
         // Loop through the board and calculate the total value of pieces for each player
         public void CalculateScores()
@@ -52,6 +56,9 @@ namespace CheckmateDesktop
             ActivePlayer = TeamColor.White;
             BoardSquares = new Piece[8, 8];
             setupBoard();
+
+            BlackKing = new Position(0, 4);
+            WhiteKing = new Position(7, 4);
         }
 
         // Functions to get and set pieces on the board
@@ -227,10 +234,160 @@ namespace CheckmateDesktop
             if (pieceToMove != null)
             {
                 pieceToMove.isFirstMove = false;
+
+                // get teams for this move
+                TeamColor actingTeam = pieceToMove.Team;
+                TeamColor enemyTeam;
+                if (actingTeam == TeamColor.White)
+                    enemyTeam = TeamColor.Black;
+                else
+                    enemyTeam = TeamColor.White;
+
+                // update our king positions if we moved the king
+                if (pieceToMove is King)
+                {
+                    if (actingTeam == TeamColor.White)
+                        WhiteKing = to;
+                    else
+                        BlackKing = to;
+                }
+
+                // Check if making this move puts the acting player in check
+                if (IsInCheck(actingTeam))
+                {
+                    Debug.WriteLine($"This move put the acting player, {actingTeam.ToString()}, in check -- ILLEGAL MOVE");
+                }
+
+                // Check if this move puts the enemy player in check
+                if (IsInCheck(enemyTeam))
+                {
+                    Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
+                }
             }
 
             // Switch the active player
             ActivePlayer = ActivePlayer == TeamColor.White ? TeamColor.Black : TeamColor.White;
+        }
+
+        // Function that returns true if a team is in check
+        public bool IsInCheck(TeamColor team)
+        {
+            // get king position based on the team passed in
+            Position KingPosition;
+            if (team == TeamColor.White)
+                KingPosition = WhiteKing;
+            else
+                KingPosition = BlackKing;
+
+            // get king using king position
+            King king = (King) GetPiece(KingPosition);
+
+            // pawn squares search
+            Piece? leftSquare = null;
+            Piece? rightSquare = null;
+            if (team == TeamColor.White)    // get pawn attacking positions based on team
+            {
+                // check two squares above for black pawns
+                leftSquare = GetPiece(new Position(KingPosition.Letter - 1, KingPosition.Number - 1));
+                rightSquare = GetPiece(new Position(KingPosition.Letter - 1, KingPosition.Number + 1));
+            }
+            else
+            {
+                // check two squares below for white pawns
+                leftSquare = GetPiece(new Position(KingPosition.Letter + 1, KingPosition.Number - 1));
+                rightSquare = GetPiece(new Position(KingPosition.Letter + 1, KingPosition.Number + 1));
+            }
+
+            // check the two pawn attacking positions for enemy pawns
+            if (leftSquare != null && leftSquare.Team != team && leftSquare is Pawn)
+            {
+                return true;
+            }
+            else if (rightSquare != null && rightSquare.Team != team && rightSquare is Pawn)
+            {
+                return true;
+            }
+
+            // diaganol search
+            foreach (var direction in new (int, int)[] { (-1, -1), (-1, 1), (1, -1), (1, 1) }) // Diagonal directions
+            {
+                int nextLetter = KingPosition.Letter + direction.Item1;
+                int nextNumber = KingPosition.Number + direction.Item2;
+
+                // Loop until we go out of bounds or hit a piece
+                while (king.IsInBounds(new Position(nextLetter, nextNumber)))
+                {
+                    Position nextPosition = new Position(nextLetter, nextNumber);
+                    Piece pieceAtNextPosition = GetPiece(nextPosition);
+
+                    if (pieceAtNextPosition != null)
+                    {
+                        // we found a piece -- check if it can capture the King
+                        if (pieceAtNextPosition.Team != team && (pieceAtNextPosition is Bishop || pieceAtNextPosition is Queen))
+                        {
+                            return true;
+                        }
+                        // if it can't (our team OR invalid moveset)
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    nextLetter += direction.Item1;
+                    nextNumber += direction.Item2;
+                }
+            }
+
+            // horizontal & vertical search
+            foreach (var direction in new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) }) // Horizontal and vertical directions
+            {
+                int nextLetter = KingPosition.Letter + direction.Item1;
+                int nextNumber = KingPosition.Number + direction.Item2;
+
+                // Loop until we go out of bounds or hit a piece
+                while (king.IsInBounds(new Position(nextLetter, nextNumber)))
+                {
+                    Position nextPosition = new Position(nextLetter, nextNumber);
+                    Piece pieceAtNextPosition = GetPiece(nextPosition);
+
+                    if (pieceAtNextPosition != null)
+                    {
+                        // we found a piece -- check if it can capture the King
+                        if (pieceAtNextPosition.Team != team && (pieceAtNextPosition is Rook || pieceAtNextPosition is Queen))
+                        {
+                            return true;
+                        }
+                        // if it can't (our team OR invalid moveset)
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    nextLetter += direction.Item1;
+                    nextNumber += direction.Item2;
+                }
+            }
+
+            // knight squares search
+            foreach (var move in new (int, int)[] { (-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1) }) // All 8 possible knight moves
+            {
+                Position nextPosition = new Position(KingPosition.Letter + move.Item1, KingPosition.Number + move.Item2);
+
+                if (king.IsInBounds(nextPosition))
+                {
+                    Piece pieceAtNextPosition = GetPiece(nextPosition);
+
+                    if (pieceAtNextPosition != null && pieceAtNextPosition.Team != team && pieceAtNextPosition is Knight)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            // nothing found, return false
+            return false;
         }
     }
 }

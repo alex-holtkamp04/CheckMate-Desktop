@@ -15,7 +15,7 @@ namespace CheckmateDesktop.GameLogic
         public bool isFirstMove;
 
         public abstract List<Position> GetValidMoves(Board currentBoard, Position currentPosition);
-        protected bool IsInBounds(Position pos)
+        public bool IsInBounds(Position pos)
         {
             return pos.Letter >= 0 && pos.Letter < 8 && pos.Number >= 0 && pos.Number < 8;
         }
