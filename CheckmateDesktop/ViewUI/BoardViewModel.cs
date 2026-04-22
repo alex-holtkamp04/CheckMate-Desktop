@@ -80,7 +80,7 @@ namespace CheckmateDesktop.ViewUI
             {
                 selectedSquare = clickedSquare;
 
-                Debug.WriteLine($"SELECTED FIRST SQUARE: {selectedSquare.Position.Letter},{selectedSquare.Position.Number}");
+                Debug.WriteLine($"SELECTED FIRST SQUARE: {selectedSquare.Position.Row},{selectedSquare.Position.Col}");
                 Debug.WriteLine($"Selected piece: {selectedSquare.CurrentPiece?.GetType().Name}");
 
                 selectedSquareBaseColor = clickedSquare.SquareColorBrush;
@@ -89,7 +89,7 @@ namespace CheckmateDesktop.ViewUI
             }
 
             // Debug Message
-            Debug.WriteLine($"TRY MOVE: {selectedSquare.Position.Letter},{selectedSquare.Position.Number} -> {clickedSquare.Position.Letter},{clickedSquare.Position.Number}");
+            Debug.WriteLine($"TRY MOVE: {selectedSquare.Position.Row},{selectedSquare.Position.Col} -> {clickedSquare.Position.Row},{clickedSquare.Position.Col}");
             Piece piece = selectedSquare.CurrentPiece;
 
             // If the square the player selected on their first click had nothing, there's no piece selected --> can't move

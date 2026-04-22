@@ -12,7 +12,7 @@ namespace CheckmateDesktop.GameLogic.Pieces
 
             foreach (var move in new (int, int)[] { (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1) }) // All adjacent squares
             {
-                Position nextPosition = new Position(currentPosition.Letter + move.Item1, currentPosition.Number + move.Item2);
+                Position nextPosition = new Position(currentPosition.Row + move.Item1, currentPosition.Col + move.Item2);
 
                 if (IsInBounds(nextPosition))
                 {

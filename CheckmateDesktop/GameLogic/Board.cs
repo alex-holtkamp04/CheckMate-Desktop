@@ -86,7 +86,7 @@ namespace CheckmateDesktop
         // Functions to get and set pieces on the board
         public Piece GetPiece(Position pos)
         {
-            return BoardSquares[pos.Letter, pos.Number];
+            return BoardSquares[pos.Row, pos.Col];
         }
 
         public void SetPiece(Position pos, Piece piece, TeamColor team)
@@ -95,7 +95,7 @@ namespace CheckmateDesktop
             {
                 piece.Team = team;
             }
-            BoardSquares[pos.Letter, pos.Number] = piece;
+            BoardSquares[pos.Row, pos.Col] = piece;
         }
 
         // Function that sets the correct starting pieces on the board 
@@ -236,7 +236,7 @@ namespace CheckmateDesktop
             // Get the valid moves for the piece and check if the to position is in the list of valid moves
             List<Position> validMoves = piece.GetValidMoves(this, from);
 
-            bool result = validMoves.Any(move => move.Letter == to.Letter && move.Number == to.Number);
+            bool result = validMoves.Any(move => move.Row == to.Row && move.Col == to.Col);
 
             // Return if the selected move is valid or not
             return result;
@@ -337,22 +337,22 @@ namespace CheckmateDesktop
             if (team == TeamColor.White)    // get pawn attacking positions based on team
             {
                 // check two squares above for black pawns
-                leftSquarePos = new Position(KingPosition.Letter - 1, KingPosition.Number - 1);
+                leftSquarePos = new Position(KingPosition.Row - 1, KingPosition.Col - 1);
                 if (king.IsInBounds(leftSquarePos))
                     leftSquare = GetPiece(leftSquarePos);
 
-                rightSquarePos = new Position(KingPosition.Letter - 1, KingPosition.Number + 1);
+                rightSquarePos = new Position(KingPosition.Row - 1, KingPosition.Col + 1);
                 if (king.IsInBounds(rightSquarePos))
                     rightSquare = GetPiece(rightSquarePos);
             }
             else
             {
                 // check two squares below for white pawns
-                leftSquarePos = new Position(KingPosition.Letter + 1, KingPosition.Number - 1);
+                leftSquarePos = new Position(KingPosition.Row + 1, KingPosition.Col - 1);
                 if (king.IsInBounds(leftSquarePos))
                     leftSquare = GetPiece(leftSquarePos);
 
-                rightSquarePos = new Position(KingPosition.Letter + 1, KingPosition.Number + 1);
+                rightSquarePos = new Position(KingPosition.Row + 1, KingPosition.Col + 1);
                 if (king.IsInBounds(rightSquarePos))
                     rightSquare = GetPiece(rightSquarePos);
             }
@@ -370,8 +370,8 @@ namespace CheckmateDesktop
             // diaganol search
             foreach (var direction in new (int, int)[] { (-1, -1), (-1, 1), (1, -1), (1, 1) }) // Diagonal directions
             {
-                int nextLetter = KingPosition.Letter + direction.Item1;
-                int nextNumber = KingPosition.Number + direction.Item2;
+                int nextLetter = KingPosition.Row + direction.Item1;
+                int nextNumber = KingPosition.Col + direction.Item2;
 
                 // Loop until we go out of bounds or hit a piece
                 while (king.IsInBounds(new Position(nextLetter, nextNumber)))
@@ -401,8 +401,8 @@ namespace CheckmateDesktop
             // horizontal & vertical search
             foreach (var direction in new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) }) // Horizontal and vertical directions
             {
-                int nextLetter = KingPosition.Letter + direction.Item1;
-                int nextNumber = KingPosition.Number + direction.Item2;
+                int nextLetter = KingPosition.Row + direction.Item1;
+                int nextNumber = KingPosition.Col + direction.Item2;
 
                 // Loop until we go out of bounds or hit a piece
                 while (king.IsInBounds(new Position(nextLetter, nextNumber)))
@@ -432,7 +432,7 @@ namespace CheckmateDesktop
             // knight squares search
             foreach (var move in new (int, int)[] { (-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1) }) // All 8 possible knight moves
             {
-                Position nextPosition = new Position(KingPosition.Letter + move.Item1, KingPosition.Number + move.Item2);
+                Position nextPosition = new Position(KingPosition.Row + move.Item1, KingPosition.Col + move.Item2);
 
                 if (king.IsInBounds(nextPosition))
                 {

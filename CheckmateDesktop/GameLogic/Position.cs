@@ -6,12 +6,12 @@ namespace CheckmateDesktop.GameLogic
 {
     public class Position
     {
-        public int Letter { get; set; }
-        public int Number { get; set; }
-        public Position(int letter, int number)
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public Position(int row, int col)
         {
-            Letter = letter;
-            Number = number;
+            Row = row;
+            Col = col;
         }
     }
 }

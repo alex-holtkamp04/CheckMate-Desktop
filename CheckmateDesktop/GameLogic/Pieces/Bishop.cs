@@ -17,13 +17,13 @@ namespace CheckmateDesktop.GameLogic.Pieces
 
             foreach (var direction in new (int, int)[] { (-1, -1), (-1, 1), (1, -1), (1, 1) }) // Diagonal directions
             {
-                int nextLetter = currentPosition.Letter + direction.Item1;
-                int nextNumber = currentPosition.Number + direction.Item2;
+                int nextRow = currentPosition.Row + direction.Item1;
+                int nextCol = currentPosition.Col + direction.Item2;
 
                 // Loop until we go out of bounds or hit a piece
-                while (IsInBounds(new Position(nextLetter, nextNumber)))
+                while (IsInBounds(new Position(nextRow, nextCol)))
                 {
-                    Position nextPosition = new Position(nextLetter, nextNumber);
+                    Position nextPosition = new Position(nextRow, nextCol);
                     Piece pieceAtNextPosition = currentBoard.GetPiece(nextPosition);
 
                     if (pieceAtNextPosition == null)
@@ -39,8 +39,8 @@ namespace CheckmateDesktop.GameLogic.Pieces
                         break; // Stop searching in this direction if we hit any piece
                     }
 
-                    nextLetter += direction.Item1;
-                    nextNumber += direction.Item2;
+                    nextRow += direction.Item1;
+                    nextCol += direction.Item2;
                 }
             }
 

@@ -17,7 +17,7 @@ namespace CheckmateDesktop.GameLogic.Pieces
 
             foreach (var move in new (int, int)[] { (-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1) }) // All 8 possible knight moves
             {
-                Position nextPosition = new Position(currentPosition.Letter + move.Item1, currentPosition.Number + move.Item2);
+                Position nextPosition = new Position(currentPosition.Row + move.Item1, currentPosition.Col + move.Item2);
 
                 if (IsInBounds(nextPosition))
                 {

@@ -17,7 +17,6 @@ namespace CheckmateDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        Board board;
         public MainWindow()
         {
             InitializeComponent();
