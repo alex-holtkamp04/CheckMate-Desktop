@@ -8,6 +8,7 @@ using System.Windows.Media;
 using static CheckmateDesktop.GameLogic.Piece;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
+using System.Windows.Navigation;
 
 namespace CheckmateDesktop
 {
@@ -23,6 +24,8 @@ namespace CheckmateDesktop
 
         Position WhiteKing;
         Position BlackKing;
+
+        public enum GameState { Normal, Check, Checkmate, Stalemate };
 
         // Loop through the board and calculate the total value of pieces for each player
         public void CalculateScores()
@@ -59,6 +62,25 @@ namespace CheckmateDesktop
 
             BlackKing = new Position(0, 4);
             WhiteKing = new Position(7, 4);
+        }
+
+        // Copy Constructor so we can quickly copy Boards when testing Game State
+        public Board (Board oldBoard)
+        {
+            BoardSquares = new Piece[8, 8];
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    BoardSquares[row, col] = oldBoard.BoardSquares[row, col];
+                }
+            }
+
+            ActivePlayer = oldBoard.ActivePlayer;
+            whiteValue = oldBoard.whiteValue;
+            blackValue = oldBoard.blackValue;
+            WhiteKing = oldBoard.WhiteKing;
+            BlackKing = oldBoard.BlackKing;
         }
 
         // Functions to get and set pieces on the board
@@ -220,16 +242,34 @@ namespace CheckmateDesktop
             return result;
         }
 
-        // Function to move the piece on the board
-        public void MovePiece(Position from, Position to)
+        public void ExecuteMove(Position from, Position to)
         {
             // Get the piece to move
             Piece pieceToMove = GetPiece(from);
 
             // Set the piece to the new position
             SetPiece(to, pieceToMove, pieceToMove.Team);
+
             // Clear the old position
             SetPiece(from, null, TeamColor.None);
+
+            // update our king positions if we moved the king
+            if (pieceToMove is King)
+            {
+                if (pieceToMove.Team == TeamColor.White)
+                    WhiteKing = to;
+                else
+                    BlackKing = to;
+            }
+        }
+
+        // Function to move the piece on the board
+        public void MovePiece(Position from, Position to)
+        {
+            // Get the piece to move
+            Piece pieceToMove = GetPiece(from);
+
+            ExecuteMove(from, to);
 
             if (pieceToMove != null)
             {
@@ -243,25 +283,29 @@ namespace CheckmateDesktop
                 else
                     enemyTeam = TeamColor.White;
 
-                // update our king positions if we moved the king
-                if (pieceToMove is King)
-                {
-                    if (actingTeam == TeamColor.White)
-                        WhiteKing = to;
-                    else
-                        BlackKing = to;
-                }
-
                 // Check if making this move puts the acting player in check
                 if (IsInCheck(actingTeam))
                 {
-                    Debug.WriteLine($"This move put the acting player, {actingTeam.ToString()}, in check -- ILLEGAL MOVE");
+                    //Debug.WriteLine($"This move put the acting player, {actingTeam.ToString()}, in check -- ILLEGAL MOVE");
+
+                    // TODO: The move put the acting player in check and they shouldn't be allowed to make it
                 }
 
-                // Check if this move puts the enemy player in check
-                if (IsInCheck(enemyTeam))
+                // What state does this put the enemy player in?
+                GameState enemyGameState = GetGameState(enemyTeam);
+                switch (enemyGameState)
                 {
-                    Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
+                    case GameState.Check:
+                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
+                        break;
+                    case GameState.Checkmate:
+                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in checkmate. VICTORY.");
+                        break;
+                    case GameState.Stalemate:
+                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in stalemate. DRAW.");
+                        break;
+                    case GameState.Normal:
+                        break;
                 }
             }
 
@@ -270,7 +314,7 @@ namespace CheckmateDesktop
         }
 
         // Function that returns true if a team is in check
-        public bool IsInCheck(TeamColor team)
+        protected bool IsInCheck(TeamColor team)
         {
             // get king position based on the team passed in
             Position KingPosition;
@@ -283,19 +327,31 @@ namespace CheckmateDesktop
             King king = (King) GetPiece(KingPosition);
 
             // pawn squares search
+            Position leftSquarePos;
             Piece? leftSquare = null;
+            Position rightSquarePos;
             Piece? rightSquare = null;
             if (team == TeamColor.White)    // get pawn attacking positions based on team
             {
                 // check two squares above for black pawns
-                leftSquare = GetPiece(new Position(KingPosition.Letter - 1, KingPosition.Number - 1));
-                rightSquare = GetPiece(new Position(KingPosition.Letter - 1, KingPosition.Number + 1));
+                leftSquarePos = new Position(KingPosition.Letter - 1, KingPosition.Number - 1);
+                if (king.IsInBounds(leftSquarePos))
+                    leftSquare = GetPiece(leftSquarePos);
+
+                rightSquarePos = new Position(KingPosition.Letter - 1, KingPosition.Number + 1);
+                if (king.IsInBounds(rightSquarePos))
+                    rightSquare = GetPiece(rightSquarePos);
             }
             else
             {
                 // check two squares below for white pawns
-                leftSquare = GetPiece(new Position(KingPosition.Letter + 1, KingPosition.Number - 1));
-                rightSquare = GetPiece(new Position(KingPosition.Letter + 1, KingPosition.Number + 1));
+                leftSquarePos = new Position(KingPosition.Letter + 1, KingPosition.Number - 1);
+                if (king.IsInBounds(leftSquarePos))
+                    leftSquare = GetPiece(leftSquarePos);
+
+                rightSquarePos = new Position(KingPosition.Letter + 1, KingPosition.Number + 1);
+                if (king.IsInBounds(rightSquarePos))
+                    rightSquare = GetPiece(rightSquarePos);
             }
 
             // check the two pawn attacking positions for enemy pawns
@@ -388,6 +444,91 @@ namespace CheckmateDesktop
 
             // nothing found, return false
             return false;
+        }
+        
+        // Function that gets all possible moves for every single piece for one team
+        protected List<Move> GetAllMoves(TeamColor team)
+        {
+            List<Move> AllMoves = new List<Move>();
+
+            // Loop through all pieces on the board
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    // Check the square for a piece
+                    Piece thisPiece = BoardSquares[row, col];
+
+                    // if a piece is on the square AND it's on the correct team
+                    if (thisPiece != null && thisPiece.Team == team)
+                    {
+                        // Get the pieces possible moves
+                        Position thisPosition = new Position(row, col);
+                        List<Position> Possiblemoves = thisPiece.GetValidMoves(this, thisPosition);
+
+                        // add all moves to the return array
+                        foreach (Position move in Possiblemoves)
+                        {
+                            Move newMove = new Move(thisPiece, thisPosition, move);
+                            AllMoves.Add(newMove);
+                        }
+                    }
+                }
+            }
+
+            return AllMoves;
+        }
+
+        // Function to get the gamestate for a player after a turn
+        protected GameState GetGameState(TeamColor team)
+        {
+            bool isInCheck = IsInCheck(team);
+
+            // Get all possible moves every piece the player has can make
+            List<Move> PossibleMoves = GetAllMoves(team);
+
+            // Track legal moves the player can make -- this can be used later to enforce a legal move to get out of check
+            List<Move> LegalMoves = new List<Move>();
+
+            // Find which of the moves DON'T put the King in check (i.e. safe, legal moves)
+            foreach (Move move in PossibleMoves)
+            {
+                if (move.From != null && move.To != null)
+                {
+                    Board tempBoard = new Board(this);
+                    tempBoard.ExecuteMove(move.From, move.To);
+
+                    if (!tempBoard.IsInCheck(team))
+                    {
+                        LegalMoves.Add(move);
+                    }
+                }
+
+            }
+
+            // if in Check, it's either Check or Checkmate
+            if (isInCheck)
+            {
+                if (LegalMoves.Count > 0)
+                {
+                    return GameState.Check;
+                }
+                else
+                {
+                    return GameState.Checkmate;
+                }
+            }
+            else    // if NOT in check, either Normal or Stalemate
+            {
+                if (LegalMoves.Count > 0)
+                {
+                    return GameState.Normal;
+                }
+                else
+                {
+                    return GameState.Stalemate;
+                }
+            }
         }
     }
 }
