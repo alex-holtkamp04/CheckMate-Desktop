@@ -291,8 +291,11 @@ namespace CheckmateDesktop
                     // TODO: The move put the acting player in check and they shouldn't be allowed to make it
                 }
 
+                // Get the moves the enemy player can make after the acting player's move
+                List<Move> LegalMoves = GetLegalMoves(enemyTeam);
+
                 // What state does this put the enemy player in?
-                GameState enemyGameState = GetGameState(enemyTeam);
+                GameState enemyGameState = GetGameState(enemyTeam, LegalMoves);
                 switch (enemyGameState)
                 {
                     case GameState.Check:
@@ -479,11 +482,8 @@ namespace CheckmateDesktop
             return AllMoves;
         }
 
-        // Function to get the gamestate for a player after a turn
-        protected GameState GetGameState(TeamColor team)
+        protected List<Move> GetLegalMoves(TeamColor team)
         {
-            bool isInCheck = IsInCheck(team);
-
             // Get all possible moves every piece the player has can make
             List<Move> PossibleMoves = GetAllMoves(team);
 
@@ -505,6 +505,14 @@ namespace CheckmateDesktop
                 }
 
             }
+
+            return LegalMoves;
+        }
+
+        // Function to get the gamestate for a player after a turn
+        protected GameState GetGameState(TeamColor team, List<Move> LegalMoves)
+        {
+            bool isInCheck = IsInCheck(team);
 
             // if in Check, it's either Check or Checkmate
             if (isInCheck)
