@@ -482,15 +482,16 @@ namespace CheckmateDesktop
             return AllMoves;
         }
 
+        // Function that gets all the legal moves a player can make (i.e. doesn't put the King in Check)
         protected List<Move> GetLegalMoves(TeamColor team)
         {
             // Get all possible moves every piece the player has can make
             List<Move> PossibleMoves = GetAllMoves(team);
 
-            // Track legal moves the player can make -- this can be used later to enforce a legal move to get out of check
+            // Track legal moves the player can make
             List<Move> LegalMoves = new List<Move>();
 
-            // Find which of the moves DON'T put the King in check (i.e. safe, legal moves)
+            // Find which of the moves DON'T put the King in check
             foreach (Move move in PossibleMoves)
             {
                 if (move.From != null && move.To != null)
@@ -510,6 +511,7 @@ namespace CheckmateDesktop
         }
 
         // Function to get the gamestate for a player after a turn
+        // takes the list of legal moves that player can make as a parameter
         protected GameState GetGameState(TeamColor team, List<Move> LegalMoves)
         {
             bool isInCheck = IsInCheck(team);
