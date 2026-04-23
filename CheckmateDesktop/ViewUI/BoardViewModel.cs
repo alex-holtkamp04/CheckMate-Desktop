@@ -113,11 +113,12 @@ namespace CheckmateDesktop.ViewUI
             // if move is valid, move the piece
             if (isValid)
             {
-                gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position);
-
-                clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
-                clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
-                selectedSquare.CurrentPiece = null;
+                if (gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position))
+                {
+                    clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
+                    clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
+                    selectedSquare.CurrentPiece = null;
+                }
             }
 
             ClearSelection();

@@ -264,50 +264,65 @@ namespace CheckmateDesktop
         }
 
         // Function to move the piece on the board
-        public void MovePiece(Position from, Position to)
+        public bool MovePiece(Position from, Position to)
         {
-            // BEFORE MOVE -- Call GetLegalMoves() to ensure player can make this move (whether they're in check or not)
-
             // Get the piece to move
             Piece pieceToMove = GetPiece(from);
 
+            if (pieceToMove == null) return false;
+
+            // get teams for this move
+            TeamColor actingTeam = pieceToMove.Team;
+            TeamColor enemyTeam;
+            if (actingTeam == TeamColor.White)
+                enemyTeam = TeamColor.Black;
+            else
+                enemyTeam = TeamColor.White;
+
+            // BEFORE MOVE -- Call GetLegalMoves() to ensure player can make this move (whether they're in check or not)
+            List<Move> PlayerLegalMoves = GetLegalMoves(actingTeam);
+            bool isLegal = PlayerLegalMoves.Any(m =>
+                m.From.Row == from.Row && m.From.Col == from.Col &&
+                m.To.Row == to.Row && m.To.Col == to.Col
+            );
+
+            // If move is not legal, don't allow it
+            if (!isLegal)
+            {
+                Debug.WriteLine($"The move {actingTeam.ToString()} tried to make is illegal. It's still their turn.");
+                return false;
+            }
+
+            // Move is legal, so execute it
             ExecuteMove(from, to);
 
-            if (pieceToMove != null)
+            pieceToMove.isFirstMove = false;
+
+            // Get the moves the enemy player can make after the acting player's move
+            List<Move> EnemyLegalMoves = GetLegalMoves(enemyTeam);
+
+            // What state does this put the enemy player in?
+            GameState enemyGameState = GetGameState(enemyTeam, EnemyLegalMoves);
+            switch (enemyGameState)
             {
-                pieceToMove.isFirstMove = false;
-
-                // get teams for this move
-                TeamColor actingTeam = pieceToMove.Team;
-                TeamColor enemyTeam;
-                if (actingTeam == TeamColor.White)
-                    enemyTeam = TeamColor.Black;
-                else
-                    enemyTeam = TeamColor.White;
-
-                // Get the moves the enemy player can make after the acting player's move
-                List<Move> LegalMoves = GetLegalMoves(enemyTeam);
-
-                // What state does this put the enemy player in?
-                GameState enemyGameState = GetGameState(enemyTeam, LegalMoves);
-                switch (enemyGameState)
-                {
-                    case GameState.Check:
-                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
-                        break;
-                    case GameState.Checkmate:
-                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in checkmate. VICTORY.");
-                        break;
-                    case GameState.Stalemate:
-                        Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in stalemate. DRAW.");
-                        break;
-                    case GameState.Normal:
-                        break;
-                }
+                case GameState.Check:
+                    Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
+                    break;
+                case GameState.Checkmate:
+                    Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in checkmate. VICTORY.");
+                    break;
+                case GameState.Stalemate:
+                    Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in stalemate. DRAW.");
+                    break;
+                case GameState.Normal:
+                    break;
+                
             }
 
             // Switch the active player
             ActivePlayer = ActivePlayer == TeamColor.White ? TeamColor.Black : TeamColor.White;
+
+            return true;
         }
 
         // Function that returns true if a team is in check
