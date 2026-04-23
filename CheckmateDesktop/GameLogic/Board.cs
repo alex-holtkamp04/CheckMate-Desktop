@@ -266,6 +266,8 @@ namespace CheckmateDesktop
         // Function to move the piece on the board
         public void MovePiece(Position from, Position to)
         {
+            // BEFORE MOVE -- Call GetLegalMoves() to ensure player can make this move
+
             // Get the piece to move
             Piece pieceToMove = GetPiece(from);
 
@@ -282,14 +284,6 @@ namespace CheckmateDesktop
                     enemyTeam = TeamColor.Black;
                 else
                     enemyTeam = TeamColor.White;
-
-                // Check if making this move puts the acting player in check
-                if (IsInCheck(actingTeam))
-                {
-                    //Debug.WriteLine($"This move put the acting player, {actingTeam.ToString()}, in check -- ILLEGAL MOVE");
-
-                    // TODO: The move put the acting player in check and they shouldn't be allowed to make it
-                }
 
                 // Get the moves the enemy player can make after the acting player's move
                 List<Move> LegalMoves = GetLegalMoves(enemyTeam);
