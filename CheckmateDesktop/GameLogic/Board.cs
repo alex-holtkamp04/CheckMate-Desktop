@@ -266,7 +266,7 @@ namespace CheckmateDesktop
         // Function to move the piece on the board
         public void MovePiece(Position from, Position to)
         {
-            // BEFORE MOVE -- Call GetLegalMoves() to ensure player can make this move
+            // BEFORE MOVE -- Call GetLegalMoves() to ensure player can make this move (whether they're in check or not)
 
             // Get the piece to move
             Piece pieceToMove = GetPiece(from);
