@@ -6,40 +6,69 @@
         xmlns:local="clr-namespace:CheckmateDesktop"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1200">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+
     <Viewbox Stretch="Uniform" Margin="20">
-        <Border BorderBrush="#2C2C2C" BorderThickness="4" CornerRadius="2">
-            <ItemsControl ItemsSource="{Binding BoardSquares}">
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="8" Columns="8" Width="640" Height="640" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+        <StackPanel>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Command="{Binding ClickCommand}" CommandParameter="{Binding}">
+            <Border BorderBrush="#2C2C2C" BorderThickness="4" CornerRadius="2">
+                <Grid Width="640" Height="640">
 
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{Binding SquareColorBrush}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
+                    <ItemsControl ItemsSource="{Binding BoardSquares}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="8" Columns="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding ClickCommand}" CommandParameter="{Binding}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{Binding SquareColorBrush}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
+                                        <TextBlock.Effect>
+                                            <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
+                                        </TextBlock.Effect>
+                                    </TextBlock>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                            <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
+                    <Border Background="#D8000000" 
+                            Visibility="{Binding IsGameOver, Converter={StaticResource BoolToVis}}" 
+                            Panel.ZIndex="100">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding GameOverMessage}" 
+                                       FontSize="48" 
+                                       FontWeight="Bold" 
+                                       Foreground="White" 
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
 
-                                <TextBlock.Effect>
-                                    <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
-                                </TextBlock.Effect>
-                            </TextBlock>
+                </Grid>
+            </Border>
 
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+            <Button Content="Reset Board" 
+                    Command="{Binding ResetBoardCommand}" 
+                    Margin="0,20,0,0" 
+                    Padding="30,10" 
+                    FontSize="28" 
+                    FontWeight="SemiBold" 
+                    HorizontalAlignment="Center"
+                    Cursor="Hand" />
 
-            </ItemsControl>
-        </Border>
+        </StackPanel>
+
     </Viewbox>
 </Window>

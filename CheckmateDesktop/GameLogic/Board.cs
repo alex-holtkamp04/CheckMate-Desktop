@@ -26,6 +26,8 @@ namespace CheckmateDesktop
         Position BlackKing;
 
         public enum GameState { Normal, Check, Checkmate, Stalemate };
+        public GameState CurrentState { get; private set; } = GameState.Normal;
+        public TeamColor? Winner { get; private set; } = null;
 
         // Loop through the board and calculate the total value of pieces for each player
         public void CalculateScores()
@@ -303,12 +305,14 @@ namespace CheckmateDesktop
 
             // What state does this put the enemy player in?
             GameState enemyGameState = GetGameState(enemyTeam, EnemyLegalMoves);
+            CurrentState = enemyGameState;
             switch (enemyGameState)
             {
                 case GameState.Check:
                     Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in check.");
                     break;
                 case GameState.Checkmate:
+                    Winner = actingTeam;
                     Debug.WriteLine($"This move put the enemy player, {enemyTeam.ToString()}, in checkmate. VICTORY.");
                     break;
                 case GameState.Stalemate:

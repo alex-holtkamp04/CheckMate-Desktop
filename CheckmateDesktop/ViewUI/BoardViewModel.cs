@@ -10,22 +10,51 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace CheckmateDesktop.ViewUI
 {
-    public class BoardViewModel
+    public class BoardViewModel : INotifyPropertyChanged
     {
-        private static Board gameBoard;
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private Board gameBoard;
+        private SquareViewModel? selectedSquare = null;
+        private SolidColorBrush? selectedSquareBaseColor = null;
 
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
 
-        private static SquareViewModel? selectedSquare = null;
-        private static SolidColorBrush? selectedSquareBaseColor = null;
+        ICommand squareClickCommand;
 
-        ICommand squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
+        public ICommand ResetBoardCommand { get; }
+
+        private bool _isGameOver;
+        public bool IsGameOver
+        {
+            get => _isGameOver;
+            set
+            {
+                _isGameOver = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGameOver)));
+            }
+        }
+
+        private string _gameOverMessage = string.Empty;
+        public string GameOverMessage
+        {
+            get => _gameOverMessage;
+            set
+            {
+                _gameOverMessage = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GameOverMessage)));
+            }
+        }
 
         public BoardViewModel()
         {
+            squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
+            ResetBoardCommand = new RelayCommand(ResetBoard);
+
             BoardSquares = new ObservableCollection<SquareViewModel>();
             gameBoard = new Board();
             InitializeBoard();
@@ -59,7 +88,7 @@ namespace CheckmateDesktop.ViewUI
         }
 
         // Function that runs when the player clicks on a square
-        private static void OnSquareClicked(SquareViewModel clickedSquare)
+        private void OnSquareClicked(SquareViewModel clickedSquare)
         {
             // DEBUG MESSAGES:
             //
@@ -76,7 +105,7 @@ namespace CheckmateDesktop.ViewUI
             }
 
             // If the player has not already selected a square (I.E. they're clicking the piece they want to move)
-            if (selectedSquare == null)
+            if (selectedSquare == null) 
             {
                 selectedSquare = clickedSquare;
 
@@ -118,6 +147,17 @@ namespace CheckmateDesktop.ViewUI
                     clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
                     clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
                     selectedSquare.CurrentPiece = null;
+
+                    if (gameBoard.CurrentState == Board.GameState.Checkmate)
+                    {
+                        GameOverMessage = $"Checkmate!\n{gameBoard.Winner} Wins!";
+                        IsGameOver = true;
+                    }
+                    else if (gameBoard.CurrentState == Board.GameState.Stalemate)
+                    {
+                        GameOverMessage = "Stalemate!\nMatch is a Draw.";
+                        IsGameOver = true;
+                    }
                 }
             }
 
@@ -131,7 +171,7 @@ namespace CheckmateDesktop.ViewUI
 
         // Function that clears the selected square in memory
         // ensures that squares maintain their correct color
-        private static void ClearSelection()
+        private void ClearSelection()
         {
             if (selectedSquare != null)
             {
@@ -142,6 +182,19 @@ namespace CheckmateDesktop.ViewUI
             selectedSquareBaseColor = null;
 
             Debug.WriteLine("SELECTION RESET");
+        }
+
+        private void ResetBoard()
+        {
+            gameBoard = new Board();
+
+            BoardSquares.Clear();
+            InitializeBoard();
+
+            ClearSelection();
+
+            IsGameOver = false;
+            GameOverMessage = string.Empty;
         }
     }
 }
