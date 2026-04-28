@@ -13,62 +13,123 @@
 
     <Viewbox Stretch="Uniform" Margin="20">
 
-        <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
 
-            <Border BorderBrush="#2C2C2C" BorderThickness="4" CornerRadius="2">
-                <Grid Width="640" Height="640">
+            <Grid Grid.Column="0" Margin="0,0,20,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                    <ItemsControl ItemsSource="{Binding BoardSquares}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="8" Columns="8" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Command="{Binding ClickCommand}" CommandParameter="{Binding}">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{Binding SquareColorBrush}">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                    <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
-                                        <TextBlock.Effect>
-                                            <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
-                                        </TextBlock.Effect>
-                                    </TextBlock>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                <Border Grid.Row="0" BorderBrush="#2C2C2C" BorderThickness="2" CornerRadius="4" Background="#F8F8F8" Padding="15" Margin="0,0,0,15">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="Current Turn" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                        <TextBlock Text="{Binding CurrentTurnText, FallbackValue='White to Move'}" FontSize="20" HorizontalAlignment="Center" Foreground="SteelBlue"/>
+                    </StackPanel>
+                </Border>
 
-                    <Border Background="#D8000000" 
-                            Visibility="{Binding IsGameOver, Converter={StaticResource BoolToVis}}" 
-                            Panel.ZIndex="100">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding GameOverMessage}" 
-                                       FontSize="48" 
-                                       FontWeight="Bold" 
-                                       Foreground="White" 
-                                       TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                <Border Grid.Row="1" BorderBrush="#2C2C2C" BorderThickness="2" CornerRadius="4" Background="#F8F8F8" Padding="15" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="White Team" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding WhiteScore, StringFormat='Score: {0}', FallbackValue='Score: 0'}" FontSize="18" Margin="0,5,0,10"/>
 
-                </Grid>
+                        <TextBlock Text="Captured Pieces:" FontSize="16" Foreground="DarkGray" Margin="0,0,0,5"/>
+                        <TextBlock Text="♟ ♞" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2" BorderBrush="#2C2C2C" BorderThickness="2" CornerRadius="4" Background="#F8F8F8" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Black Team" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding BlackScore, StringFormat='Score: {0}', FallbackValue='Score: 0'}" FontSize="18" Margin="0,5,0,10"/>
+
+                        <TextBlock Text="Captured Pieces:" FontSize="16" Foreground="DarkGray" Margin="0,0,0,5"/>
+                        <TextBlock Text="♙ ♗" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+            <StackPanel Grid.Column="1">
+
+                <Border BorderBrush="#2C2C2C" BorderThickness="4" CornerRadius="2">
+                    <Grid Width="640" Height="640">
+
+                        <ItemsControl ItemsSource="{Binding BoardSquares}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="8" Columns="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding ClickCommand}" CommandParameter="{Binding}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{Binding SquareColorBrush}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                        <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Border Background="#D8000000" 
+                                Visibility="{Binding IsGameOver, Converter={StaticResource BoolToVis}}" 
+                                Panel.ZIndex="100">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding GameOverMessage}" 
+                                           FontSize="48" 
+                                           FontWeight="Bold" 
+                                           Foreground="White" 
+                                           TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Button Content="Reset Board" 
+                        Command="{Binding ResetBoardCommand}" 
+                        Margin="0,20,0,0" 
+                        Padding="30,10" 
+                        FontSize="28" 
+                        FontWeight="SemiBold" 
+                        HorizontalAlignment="Center"
+                        Cursor="Hand" />
+            </StackPanel>
+
+            <Border Grid.Column="2" BorderBrush="#2C2C2C" BorderThickness="2" CornerRadius="4" Margin="20,0,0,0" Background="#F8F8F8" Padding="15">
+
+                <DockPanel>
+                    <TextBlock Text="Move History" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15" DockPanel.Dock="Top"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ListBox ItemsSource="{Binding MoveHistory}" 
+                                 FontSize="16" 
+                                 BorderThickness="0" 
+                                 Background="Transparent">
+                            <ListBoxItem Content="1. e4 e5" />
+                            <ListBoxItem Content="2. Nf3 Nc6" />
+                            <ListBoxItem Content="3. Bb5 a6" />
+                        </ListBox>
+                    </ScrollViewer>
+                </DockPanel>
+
             </Border>
 
-            <Button Content="Reset Board" 
-                    Command="{Binding ResetBoardCommand}" 
-                    Margin="0,20,0,0" 
-                    Padding="30,10" 
-                    FontSize="28" 
-                    FontWeight="SemiBold" 
-                    HorizontalAlignment="Center"
-                    Cursor="Hand" />
-
-        </StackPanel>
-
+        </Grid>
     </Viewbox>
 </Window>
