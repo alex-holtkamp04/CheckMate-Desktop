@@ -77,11 +77,16 @@
                                                 </Border>
                                             </ControlTemplate>
                                         </Button.Template>
-                                        <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold">
-                                            <TextBlock.Effect>
-                                                <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
-                                            </TextBlock.Effect>
-                                        </TextBlock>
+
+                                        <Grid>
+                                            <Ellipse Width="24" Height="24" Fill="#66000000" Visibility="{Binding IsMoveHighlighted, Converter={StaticResource BoolToVis}}" />
+
+                                            <TextBlock Text="{Binding PieceUnicode}" Foreground="{Binding PieceColorBrush}" FontSize="56" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock.Effect>
+                                                    <DropShadowEffect Color="Black" BlurRadius="2" ShadowDepth="1" Opacity="0.5"/>
+                                                </TextBlock.Effect>
+                                            </TextBlock>
+                                        </Grid>
                                     </Button>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

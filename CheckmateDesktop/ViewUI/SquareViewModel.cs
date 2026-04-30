@@ -41,6 +41,18 @@ namespace CheckmateDesktop
             }
         }
 
+        // flag that changes when move is highlighted -- will show a dot on square that player can move to
+        private bool _isMoveHighlighted;
+        public bool IsMoveHighlighted
+        {
+            get { return _isMoveHighlighted; }
+            set
+            {
+                _isMoveHighlighted = value;
+                OnPropertyChanged(nameof(IsMoveHighlighted));
+            }
+        }
+
         // The current Piece on the tile
         private Piece _currentPiece;
         public Piece CurrentPiece

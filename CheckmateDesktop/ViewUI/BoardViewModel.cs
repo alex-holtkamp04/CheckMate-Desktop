@@ -173,6 +173,9 @@ namespace CheckmateDesktop.ViewUI
 
                 selectedSquareBaseColor = clickedSquare.SquareColorBrush;
                 clickedSquare.SquareColorBrush = Brushes.SteelBlue;
+
+                HighlightMoves(clickedSquare);
+
                 return;
             }
 
@@ -253,6 +256,11 @@ namespace CheckmateDesktop.ViewUI
             selectedSquare = null;
             selectedSquareBaseColor = null;
 
+            foreach (SquareViewModel square in BoardSquares)
+            {
+                square.IsMoveHighlighted = false;
+            }
+
             Debug.WriteLine("SELECTION RESET");
         }
 
@@ -301,6 +309,25 @@ namespace CheckmateDesktop.ViewUI
                     case Queen: return "♛";
                     case Rook: return "♜";
                     default: return "";
+                }
+            }
+        }
+
+        private void HighlightMoves(SquareViewModel clickedSquare)
+        {
+            Piece piece = clickedSquare.CurrentPiece;
+            if (piece == null) return;
+
+            List<Position> moves = piece.GetValidMoves(gameBoard, clickedSquare.Position);
+
+            foreach (SquareViewModel square in BoardSquares)
+            {
+                // If the square's position matches any valid move, highlight it
+                bool isValid = moves.Any(m => m.Row == square.Position.Row && m.Col == square.Position.Col);
+
+                if (isValid)
+                {
+                    square.IsMoveHighlighted = true;
                 }
             }
         }
