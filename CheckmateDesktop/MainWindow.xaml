@@ -40,7 +40,7 @@
                         <TextBlock Text="{Binding WhiteScore, StringFormat='Score: {0}', FallbackValue='Score: 0'}" FontSize="18" Margin="0,5,0,10"/>
 
                         <TextBlock Text="Captured Pieces:" FontSize="16" Foreground="DarkGray" Margin="0,0,0,5"/>
-                        <TextBlock Text="♟ ♞" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding CapturedBlackPieces}" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
 
@@ -50,7 +50,7 @@
                         <TextBlock Text="{Binding BlackScore, StringFormat='Score: {0}', FallbackValue='Score: 0'}" FontSize="18" Margin="0,5,0,10"/>
 
                         <TextBlock Text="Captured Pieces:" FontSize="16" Foreground="DarkGray" Margin="0,0,0,5"/>
-                        <TextBlock Text="♙ ♗" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding CapturedWhitePieces}" FontSize="24" Foreground="Black" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Border>
 

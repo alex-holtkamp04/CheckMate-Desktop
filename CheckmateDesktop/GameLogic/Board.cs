@@ -18,9 +18,9 @@ namespace CheckmateDesktop
 
         Piece[,] BoardSquares;
 
-        TeamColor ActivePlayer;
+        public TeamColor ActivePlayer;
 
-        public int whiteValue, blackValue;
+        public int whiteValue, blackValue, WhiteScore, BlackScore;
 
         Position WhiteKing;
         Position BlackKing;
@@ -28,6 +28,9 @@ namespace CheckmateDesktop
         public enum GameState { Normal, Check, Checkmate, Stalemate };
         public GameState CurrentState { get; private set; } = GameState.Normal;
         public TeamColor? Winner { get; private set; } = null;
+
+        public List<Piece> CapturedWhitePieces = new List<Piece>();
+        public List<Piece> CapturedBlackPieces = new List<Piece>();
 
         // Loop through the board and calculate the total value of pieces for each player
         public void CalculateScores()
@@ -53,6 +56,9 @@ namespace CheckmateDesktop
                     }
                 }
             }
+
+            WhiteScore = 39 - blackValue;
+            BlackScore = 39 - whiteValue;
         }
 
         // Constructor to initialize the board with pieces in their starting positions
@@ -293,6 +299,20 @@ namespace CheckmateDesktop
             {
                 Debug.WriteLine($"The move {actingTeam.ToString()} tried to make is illegal. It's still their turn.");
                 return false;
+            }
+
+            // Check for captures
+            Piece pieceToCapture = GetPiece(to);
+            if (pieceToCapture !=  null)
+            {
+                if (pieceToCapture.Team == TeamColor.White)
+                {
+                    CapturedWhitePieces.Add(pieceToCapture);
+                }
+                if (pieceToCapture.Team == TeamColor.Black)
+                {
+                    CapturedBlackPieces.Add(pieceToCapture);
+                }
             }
 
             // Move is legal, so execute it

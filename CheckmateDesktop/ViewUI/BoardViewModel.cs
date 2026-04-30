@@ -50,6 +50,61 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        private int _whiteScore;
+        public int WhiteScore
+        {
+            get => _whiteScore;
+            set
+            {
+                _whiteScore = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WhiteScore)));
+            }
+        }
+
+        private int _blackScore;
+        public int BlackScore
+        {
+            get => _blackScore;
+            set
+            {
+                _blackScore = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BlackScore)));
+            }
+        }
+
+        private string _currentTurnText;
+        public string CurrentTurnText
+        {
+            get => _currentTurnText;
+            set
+            {
+                _currentTurnText = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTurnText)));
+            }
+        }
+
+        private string _capturedWhitePieces;
+        public string CapturedWhitePieces
+        {
+            get => _capturedWhitePieces;
+            set
+            {
+                _capturedWhitePieces = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CapturedWhitePieces)));
+            }
+        }
+
+        private string _capturedBlackPieces;
+        public string CapturedBlackPieces
+        {
+            get => _capturedBlackPieces;
+            set
+            {
+                _capturedBlackPieces = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CapturedBlackPieces)));
+            }
+        }  
+
         public BoardViewModel()
         {
             squareClickCommand = new RelayCommand<SquareViewModel>(OnSquareClicked);
@@ -58,6 +113,10 @@ namespace CheckmateDesktop.ViewUI
             BoardSquares = new ObservableCollection<SquareViewModel>();
             gameBoard = new Board();
             InitializeBoard();
+
+            CurrentTurnText = "White to Move";
+            CapturedWhitePieces = "";
+            CapturedBlackPieces = "";
         }
 
         // Function that initializes the board on the front end
@@ -144,10 +203,20 @@ namespace CheckmateDesktop.ViewUI
             {
                 if (gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position))
                 {
+                    // Update Pieces
                     clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
                     clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
                     selectedSquare.CurrentPiece = null;
 
+                    // Update Captured Pieces
+                    UpdateCapturedPieces();
+
+                    // Update Score
+                    gameBoard.CalculateScores();
+                    WhiteScore = gameBoard.WhiteScore;
+                    BlackScore = gameBoard.BlackScore;
+
+                    // Update game state
                     if (gameBoard.CurrentState == Board.GameState.Checkmate)
                     {
                         GameOverMessage = $"Checkmate!\n{gameBoard.Winner} Wins!";
@@ -158,15 +227,18 @@ namespace CheckmateDesktop.ViewUI
                         GameOverMessage = "Stalemate!\nMatch is a Draw.";
                         IsGameOver = true;
                     }
+
+                    // Update the turn text
+                    else
+                    {
+                        CurrentTurnText = $"{gameBoard.ActivePlayer.ToString()} to Move";
+                    }
                 }
             }
 
             ClearSelection();
 
-            // in case the player captured a piece, update the score
-            gameBoard.CalculateScores();
-            Debug.WriteLine($"The Current Score is: White: {gameBoard.whiteValue} - Black: {gameBoard.blackValue}");
-
+            Debug.WriteLine($"The Current Score is: White: {gameBoard.WhiteScore} - Black: {gameBoard.BlackScore}");
         }
 
         // Function that clears the selected square in memory
@@ -184,6 +256,55 @@ namespace CheckmateDesktop.ViewUI
             Debug.WriteLine("SELECTION RESET");
         }
 
+        // Method that updates the strings that display the captured pieces
+        private void UpdateCapturedPieces()
+        {
+            CapturedWhitePieces = "";
+            foreach (Piece p in gameBoard.CapturedWhitePieces)
+            {
+                CapturedWhitePieces += $"{GetPieceUnicode(p)} ";
+            }
+
+            CapturedBlackPieces = "";
+            foreach (Piece p in gameBoard.CapturedBlackPieces)
+            {
+                CapturedBlackPieces += $"{GetPieceUnicode(p)} ";
+            }
+        }
+
+        // Helper method for displaying captured pieces
+        private string GetPieceUnicode(Piece piece)
+        {
+            if (piece == null) return "";
+
+            if (piece.Team == Piece.TeamColor.White)
+            {
+                switch (piece)
+                {
+                    case Bishop: return "♗";
+                    case King: return "♔";
+                    case Knight: return "♘";
+                    case Pawn: return "♙";
+                    case Queen: return "♕";
+                    case Rook: return "♖";
+                    default: return "";
+                }
+            }
+            else // Piece is Black
+            {
+                switch (piece)
+                {
+                    case Bishop: return "♝";
+                    case King: return "♚";
+                    case Knight: return "♞";
+                    case Pawn: return "♟";
+                    case Queen: return "♛";
+                    case Rook: return "♜";
+                    default: return "";
+                }
+            }
+        }
+
         private void ResetBoard()
         {
             gameBoard = new Board();
@@ -195,6 +316,12 @@ namespace CheckmateDesktop.ViewUI
 
             IsGameOver = false;
             GameOverMessage = string.Empty;
+
+            CurrentTurnText = "White to Move";
+            CapturedWhitePieces = "";
+            CapturedBlackPieces = "";
+            WhiteScore = 0;
+            BlackScore = 0;
         }
     }
 }
