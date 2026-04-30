@@ -262,13 +262,13 @@ namespace CheckmateDesktop.ViewUI
             CapturedWhitePieces = "";
             foreach (Piece p in gameBoard.CapturedWhitePieces)
             {
-                CapturedWhitePieces += $"{GetPieceUnicode(p)} ";
+                CapturedWhitePieces += $"{GetPieceUnicode(p)}";
             }
 
             CapturedBlackPieces = "";
             foreach (Piece p in gameBoard.CapturedBlackPieces)
             {
-                CapturedBlackPieces += $"{GetPieceUnicode(p)} ";
+                CapturedBlackPieces += $"{GetPieceUnicode(p)}";
             }
         }
 
