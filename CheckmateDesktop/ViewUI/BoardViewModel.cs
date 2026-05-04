@@ -103,7 +103,18 @@ namespace CheckmateDesktop.ViewUI
                 _capturedBlackPieces = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CapturedBlackPieces)));
             }
-        }  
+        }
+
+        private ObservableCollection<string> _MoveHistoryDisplay = new();
+        public ObservableCollection<string> MoveHistoryDisplay
+        {
+            get => _MoveHistoryDisplay;
+            set
+            {
+                _MoveHistoryDisplay = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoveHistoryDisplay)));
+            }
+        }
 
         public BoardViewModel()
         {
@@ -164,7 +175,7 @@ namespace CheckmateDesktop.ViewUI
             }
 
             // If the player has not already selected a square (I.E. they're clicking the piece they want to move)
-            if (selectedSquare == null) 
+            if (selectedSquare == null)
             {
                 selectedSquare = clickedSquare;
 
@@ -204,7 +215,31 @@ namespace CheckmateDesktop.ViewUI
             // if move is valid, move the piece
             if (isValid)
             {
-                if (gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position))
+
+                Move? move = gameBoard.MovePiece(selectedSquare.Position, clickedSquare.Position);
+
+                if (move == null)
+                {
+                    Debug.WriteLine("ERROR: MovePiece returned null");
+                    ClearSelection();
+                    return;
+                }
+
+                if (gameBoard.ActivePlayer == Piece.TeamColor.Black)
+                {
+                    int moveNumber = (MoveHistoryDisplay.Count / 2) + 1;
+                    MoveHistoryDisplay.Add($"{moveNumber}. {FormatMove(move)}");
+                }
+                else
+                {
+                    // append to last line
+                    if (MoveHistoryDisplay.Count > 0)
+                    {
+                        MoveHistoryDisplay[MoveHistoryDisplay.Count - 1] += $" {FormatMove(move)}";
+                    }
+                }
+
+                if (move != null)
                 {
                     // Update Pieces
                     clickedSquare.CurrentPiece = gameBoard.GetPiece(clickedSquare.Position);
@@ -349,6 +384,31 @@ namespace CheckmateDesktop.ViewUI
             CapturedBlackPieces = "";
             WhiteScore = 0;
             BlackScore = 0;
+        }
+
+        private string FormatMove(Move move)
+        {
+            string pieceLetter = move.Piece switch
+            {
+                Pawn => "",
+                Knight => "N",
+                Bishop => "B",
+                Rook => "R",
+                Queen => "Q",
+                King => "K",
+                _ => ""
+            };
+
+            char letter = (char)('a' + move.To.Col);
+            int number = 8 - move.To.Row;
+
+            if (move.Piece is Pawn && move.IsCapture)
+            {
+                char fromFile = (char)('a' + move.From.Col);
+                return $"{fromFile}x{letter}{number}";
+            }
+
+            return $"{pieceLetter}{(move.IsCapture ? "x" : "")}{letter}{number}";
         }
     }
 }

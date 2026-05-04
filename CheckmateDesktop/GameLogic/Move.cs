@@ -9,11 +9,13 @@ namespace CheckmateDesktop.GameLogic
         public Piece? Piece { get; set; }
         public Position? From { get; set; }
         public Position? To { get; set; }
-        public Move (Piece piece, Position from, Position to)
+        public bool IsCapture { get; set; }
+        public Move(Piece piece, Position from, Position to, bool iscapture)
         {
             Piece = piece;
             From = from;
             To = to;
+            IsCapture = iscapture;
         }
 
     }

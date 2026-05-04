@@ -122,13 +122,10 @@
                     <TextBlock Text="Move History" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15" DockPanel.Dock="Top"/>
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ListBox ItemsSource="{Binding MoveHistory}" 
+                        <ListBox ItemsSource="{Binding MoveHistoryDisplay}" 
                                  FontSize="16" 
                                  BorderThickness="0" 
                                  Background="Transparent">
-                            <ListBoxItem Content="1. e4 e5" />
-                            <ListBoxItem Content="2. Nf3 Nc6" />
-                            <ListBoxItem Content="3. Bb5 a6" />
                         </ListBox>
                     </ScrollViewer>
                 </DockPanel>

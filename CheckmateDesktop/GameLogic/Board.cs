@@ -32,6 +32,8 @@ namespace CheckmateDesktop
         public List<Piece> CapturedWhitePieces = new List<Piece>();
         public List<Piece> CapturedBlackPieces = new List<Piece>();
 
+        public List<Move> MoveHistory = new List<Move>();
+
         // Loop through the board and calculate the total value of pieces for each player
         public void CalculateScores()
         {
@@ -73,7 +75,7 @@ namespace CheckmateDesktop
         }
 
         // Copy Constructor so we can quickly copy Boards when testing Game State
-        public Board (Board oldBoard)
+        public Board(Board oldBoard)
         {
             BoardSquares = new Piece[8, 8];
             for (int row = 0; row < 8; row++)
@@ -272,12 +274,12 @@ namespace CheckmateDesktop
         }
 
         // Function to move the piece on the board
-        public bool MovePiece(Position from, Position to)
+        public Move? MovePiece(Position from, Position to)
         {
             // Get the piece to move
             Piece pieceToMove = GetPiece(from);
 
-            if (pieceToMove == null) return false;
+            if (pieceToMove == null) return null;
 
             // get teams for this move
             TeamColor actingTeam = pieceToMove.Team;
@@ -298,12 +300,12 @@ namespace CheckmateDesktop
             if (!isLegal)
             {
                 Debug.WriteLine($"The move {actingTeam.ToString()} tried to make is illegal. It's still their turn.");
-                return false;
+                return null;
             }
 
             // Check for captures
             Piece pieceToCapture = GetPiece(to);
-            if (pieceToCapture !=  null)
+            if (pieceToCapture != null)
             {
                 if (pieceToCapture.Team == TeamColor.White)
                 {
@@ -314,6 +316,11 @@ namespace CheckmateDesktop
                     CapturedBlackPieces.Add(pieceToCapture);
                 }
             }
+
+            bool isCapture = pieceToCapture != null;
+            Move move = new Move(pieceToMove, from, to, isCapture);
+
+            MoveHistory.Add(move);
 
             // Move is legal, so execute it
             ExecuteMove(from, to);
@@ -340,13 +347,13 @@ namespace CheckmateDesktop
                     break;
                 case GameState.Normal:
                     break;
-                
+
             }
 
             // Switch the active player
             ActivePlayer = ActivePlayer == TeamColor.White ? TeamColor.Black : TeamColor.White;
 
-            return true;
+            return move;
         }
 
         // Function that returns true if a team is in check
@@ -360,7 +367,7 @@ namespace CheckmateDesktop
                 KingPosition = BlackKing;
 
             // get king using king position
-            King king = (King) GetPiece(KingPosition);
+            King king = (King)GetPiece(KingPosition);
 
             // pawn squares search
             Position leftSquarePos;
@@ -481,7 +488,7 @@ namespace CheckmateDesktop
             // nothing found, return false
             return false;
         }
-        
+
         // Function that gets all possible moves for every single piece for one team
         protected List<Move> GetAllMoves(TeamColor team)
         {
@@ -505,7 +512,7 @@ namespace CheckmateDesktop
                         // add all moves to the return array
                         foreach (Position move in Possiblemoves)
                         {
-                            Move newMove = new Move(thisPiece, thisPosition, move);
+                            Move newMove = new Move(thisPiece, thisPosition, move, false);
                             AllMoves.Add(newMove);
                         }
                     }
