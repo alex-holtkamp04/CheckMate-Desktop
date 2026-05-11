@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CheckmateDesktop.GameLogic
 {
+    // Helper class to hold move data for calculating valid moves
     public class Move
     {
         public Piece? Piece { get; set; }

@@ -10,6 +10,11 @@ using System.Windows.Media;
 
 namespace CheckmateDesktop
 {
+    /* 
+    This class controls the front-end model for the squares and their pieces.
+
+    It displays the color of the square, the color of the piece on that square, and the visual display (Unicode) of the piece.
+     */
     public class SquareViewModel(ICommand bossCommand) : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;

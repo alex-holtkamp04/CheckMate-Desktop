@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CheckmateDesktop.GameLogic
 {
+    // Parent class for each piece type to inherit
     public abstract class Piece
     {
         public enum TeamColor { White, Black, None };
@@ -14,6 +15,7 @@ namespace CheckmateDesktop.GameLogic
 
         public bool isFirstMove;
 
+        // Abstract function each piece type will inherit to calculate valid moves for that piece type
         public abstract List<Position> GetValidMoves(Board currentBoard, Position currentPosition);
         public bool IsInBounds(Position pos)
         {

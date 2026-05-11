@@ -14,20 +14,31 @@ using System.ComponentModel;
 
 namespace CheckmateDesktop.ViewUI
 {
+    /* 
+    This class controls the front-end model for the board.
+
+    It displays the board itself and all the information around the board that is displayed to the user.
+    It controls the visual movement of pieces and sends user movement to the backend to handle.
+     */
     public class BoardViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        // back-end state of board
         private Board gameBoard;
+
+        // hold user's currently selected square
         private SquareViewModel? selectedSquare = null;
         private SolidColorBrush? selectedSquareBaseColor = null;
 
+        // Collection of squares to control front-end appearance of board squares
         public ObservableCollection<SquareViewModel> BoardSquares { get; set; }
 
         ICommand squareClickCommand;
 
         public ICommand ResetBoardCommand { get; }
 
+        // boolean for displaying game-over messages
         private bool _isGameOver;
         public bool IsGameOver
         {
@@ -39,6 +50,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // front-end message that displays when game is over (winner or draw)
         private string _gameOverMessage = string.Empty;
         public string GameOverMessage
         {
@@ -50,6 +62,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // holds value of white's score for score display
         private int _whiteScore;
         public int WhiteScore
         {
@@ -61,6 +74,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // holds value of black's score for score display
         private int _blackScore;
         public int BlackScore
         {
@@ -72,6 +86,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // display the current player turn on the front-end
         private string _currentTurnText;
         public string CurrentTurnText
         {
@@ -83,6 +98,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // display the captured pieces for each team as a string of their Unicode characters
         private string _capturedWhitePieces;
         public string CapturedWhitePieces
         {
@@ -105,6 +121,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // Hold move history as a collection that is bound to front-end list
         private ObservableCollection<string> _MoveHistoryDisplay = new();
         public ObservableCollection<string> MoveHistoryDisplay
         {
@@ -404,6 +421,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // Method that highlights valid moves based which square the user has selected
         private void HighlightMoves(SquareViewModel clickedSquare)
         {
             Piece piece = clickedSquare.CurrentPiece;
@@ -423,6 +441,7 @@ namespace CheckmateDesktop.ViewUI
             }
         }
 
+        // Method to reset the board and all the surrounding displays
         private void ResetBoard()
         {
             gameBoard = new Board();
@@ -444,6 +463,7 @@ namespace CheckmateDesktop.ViewUI
             BlackScore = 0;
         }
 
+        // Method for converting row-column logic to standard chess move display
         private string FormatMove(Move move)
         {
             string pieceLetter = move.Piece switch

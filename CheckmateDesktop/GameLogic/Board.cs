@@ -12,10 +12,16 @@ using System.Windows.Navigation;
 
 namespace CheckmateDesktop
 {
+    /* 
+    This class controls the back-end for the board.
+
+    When movements are made, they are sent to a Board object that tracks movements, captures, and game state in the background.
+     */
     public class Board
     {
         //public enum BoardMarkers {A, B, C, D, E, F, G, H};
 
+        // 2D array of pieces will represent baord squares -- square with no piece is null
         Piece[,] BoardSquares;
 
         public TeamColor ActivePlayer;
@@ -25,13 +31,20 @@ namespace CheckmateDesktop
         Position WhiteKing;
         Position BlackKing;
 
+        // enum for representing the game state
         public enum GameState { Normal, Check, Checkmate, Stalemate };
+
+        // hold the current game state -- front end can check this for a stalemate or checkmate to update the 'Game Over' display
         public GameState CurrentState { get; private set; } = GameState.Normal;
+
+        // hold the current winner - front end can check this to display a winner
         public TeamColor? Winner { get; private set; } = null;
 
+        // Lists of captured pieces that alerts the front end to display
         public List<Piece> CapturedWhitePieces = new List<Piece>();
         public List<Piece> CapturedBlackPieces = new List<Piece>();
 
+        // List of moves in move history for front end to read
         public List<Move> MoveHistory = new List<Move>();
 
         // Loop through the board and calculate the total value of pieces for each player
