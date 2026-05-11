@@ -274,6 +274,8 @@ namespace CheckmateDesktop
             return result;
         }
 
+        // Method that just executes move and updates king position
+            // separate from MovePiece function so that theoretical boards can be calculated when looking for valid moves
         public void ExecuteMove(Position from, Position to)
         {
             // Get the piece to move
