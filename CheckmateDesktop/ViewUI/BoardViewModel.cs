@@ -432,6 +432,8 @@ namespace CheckmateDesktop.ViewUI
 
             ClearSelection();
 
+            MoveHistoryDisplay.Clear();
+
             IsGameOver = false;
             GameOverMessage = string.Empty;
 
