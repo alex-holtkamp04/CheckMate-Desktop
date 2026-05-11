@@ -9,6 +9,7 @@ Download the provided zip file containing the solution file along with the execu
 
 ### Running the application:
 If using an executable file:
+- Within the unzipped file provided, go to the `CheckmateDesktop\bin\Debug\net10.0-windows` folder and run the .exe file
 - Run the Executable file provided
 - To stop, simply close the application
 
