@@ -19,5 +19,9 @@ namespace CheckmateDesktop.GameLogic
         {
             return pos.Row >= 0 && pos.Row < 8 && pos.Col >= 0 && pos.Col < 8;
         }
+        public virtual Piece Clone()
+        {
+            return (Piece)this.MemberwiseClone();
+        }
     }
 }

@@ -25,8 +25,44 @@ namespace CheckmateDesktop.GameLogic.Pieces
                 }
             }
 
-            // TODO: Add castling logic here (need to check if king and rook have moved
-            // , and if squares between them are empty and not under attack)
+            // Castling Logic
+            if (isFirstMove)
+            {
+                int row = currentPosition.Row;
+
+                // Kingside Castling
+                Position kingsideRookPos = new Position(row, 7);
+                Piece kingsideRook = currentBoard.GetPiece(kingsideRookPos);
+
+                if (kingsideRook is Rook &&
+                    kingsideRook.Team == Team &&
+                    kingsideRook.isFirstMove)
+                {
+                    // Squares between king and rook must be empty
+                    if (currentBoard.GetPiece(new Position(row, 5)) == null &&
+                        currentBoard.GetPiece(new Position(row, 6)) == null)
+                    {
+                        ValidMoves.Add(new Position(row, 6));
+                    }
+                }
+
+                // Queenside Castling
+                Position queensideRookPos = new Position(row, 0);
+                Piece queensideRook = currentBoard.GetPiece(queensideRookPos);
+
+                if (queensideRook is Rook &&
+                    queensideRook.Team == Team &&
+                    queensideRook.isFirstMove)
+                {
+                    // Squares between king and rook must be empty
+                    if (currentBoard.GetPiece(new Position(row, 1)) == null &&
+                        currentBoard.GetPiece(new Position(row, 2)) == null &&
+                        currentBoard.GetPiece(new Position(row, 3)) == null)
+                    {
+                        ValidMoves.Add(new Position(row, 2));
+                    }
+                }
+            }
 
             return ValidMoves;
         }

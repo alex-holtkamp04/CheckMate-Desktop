@@ -44,7 +44,6 @@ namespace CheckmateDesktop.GameLogic.Pieces
                 }
             }
 
-            // TODO: Add castling logic here
 
             return ValidMoves;
         }

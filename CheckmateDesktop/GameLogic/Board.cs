@@ -82,15 +82,24 @@ namespace CheckmateDesktop
             {
                 for (int col = 0; col < 8; col++)
                 {
-                    BoardSquares[row, col] = oldBoard.BoardSquares[row, col];
+                    if (oldBoard.BoardSquares[row, col] != null)
+                    {
+                        BoardSquares[row, col] = oldBoard.BoardSquares[row, col].Clone();
+                    }
+                    else
+                    {
+                        BoardSquares[row, col] = null;
+                    }
                 }
             }
 
             ActivePlayer = oldBoard.ActivePlayer;
             whiteValue = oldBoard.whiteValue;
             blackValue = oldBoard.blackValue;
-            WhiteKing = oldBoard.WhiteKing;
-            BlackKing = oldBoard.BlackKing;
+
+            // Copy king positions 
+            WhiteKing = new Position(oldBoard.WhiteKing.Row, oldBoard.WhiteKing.Col);
+            BlackKing = new Position(oldBoard.BlackKing.Row, oldBoard.BlackKing.Col);
         }
 
         // Functions to get and set pieces on the board
@@ -263,7 +272,67 @@ namespace CheckmateDesktop
             // Clear the old position
             SetPiece(from, null, TeamColor.None);
 
-            // update our king positions if we moved the king
+            // Castling Logic
+            if (pieceToMove is King)
+            {
+                int colDifference = to.Col - from.Col;
+
+                // Kingside Castle
+                if (colDifference == 2)
+                {
+                    Debug.WriteLine("Kingside castle triggered");
+
+                    Position rookFrom = new Position(from.Row, 7);
+                    Position rookTo = new Position(from.Row, 5);
+
+                    Piece rook = GetPiece(rookFrom);
+
+                    if (rook is Rook)
+                    {
+                        Debug.WriteLine("Kingside rook found");
+
+                        SetPiece(rookTo, rook, rook.Team);
+                        SetPiece(rookFrom, null, TeamColor.None);
+
+                        rook.isFirstMove = false;
+
+                        Debug.WriteLine("Kingside rook moved");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Kingside rook NOT found");
+                    }
+                }
+
+                // Queenside Castle
+                else if (colDifference == -2)
+                {
+                    Debug.WriteLine("Queenside castle triggered");
+
+                    Position rookFrom = new Position(from.Row, 0);
+                    Position rookTo = new Position(from.Row, 3);
+
+                    Piece rook = GetPiece(rookFrom);
+
+                    if (rook is Rook)
+                    {
+                        Debug.WriteLine("Queenside rook found");
+
+                        SetPiece(rookTo, rook, rook.Team);
+                        SetPiece(rookFrom, null, TeamColor.None);
+
+                        rook.isFirstMove = false;
+
+                        Debug.WriteLine("Queenside rook moved");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Queenside rook NOT found");
+                    }
+                }
+            }
+
+            // Update King Position
             if (pieceToMove is King)
             {
                 if (pieceToMove.Team == TeamColor.White)
@@ -326,6 +395,22 @@ namespace CheckmateDesktop
             ExecuteMove(from, to);
 
             pieceToMove.isFirstMove = false;
+
+            // Pawn Promotion
+            if (pieceToMove is Pawn)
+            {
+                // White pawn reached top row
+                if (pieceToMove.Team == TeamColor.White && to.Row == 0)
+                {
+                    SetPiece(to, new Queen(), TeamColor.White);
+                }
+
+                // Black pawn reached bottom row
+                else if (pieceToMove.Team == TeamColor.Black && to.Row == 7)
+                {
+                    SetPiece(to, new Queen(), TeamColor.Black);
+                }
+            }
 
             // Get the moves the enemy player can make after the acting player's move
             List<Move> EnemyLegalMoves = GetLegalMoves(enemyTeam);

@@ -246,6 +246,62 @@ namespace CheckmateDesktop.ViewUI
                     clickedSquare.PieceColorBrush = (clickedSquare.CurrentPiece?.Team == Piece.TeamColor.White) ? Brushes.White : Brushes.Black;
                     selectedSquare.CurrentPiece = null;
 
+                    // Check for Castling Move and update rook if necessary
+                    if (piece is King)
+                    {
+                        int colDifference = clickedSquare.Position.Col - selectedSquare.Position.Col;
+
+                        // Kingside castle
+                        if (colDifference == 2)
+                        {
+                            Position rookOldPos = new Position(selectedSquare.Position.Row, 7);
+                            Position rookNewPos = new Position(selectedSquare.Position.Row, 5);
+
+                            SquareViewModel rookOldSquare =
+                                BoardSquares.First(s =>
+                                    s.Position.Row == rookOldPos.Row &&
+                                    s.Position.Col == rookOldPos.Col);
+
+                            SquareViewModel rookNewSquare =
+                                BoardSquares.First(s =>
+                                    s.Position.Row == rookNewPos.Row &&
+                                    s.Position.Col == rookNewPos.Col);
+
+                            rookNewSquare.CurrentPiece = gameBoard.GetPiece(rookNewPos);
+                            rookNewSquare.PieceColorBrush =
+                                (rookNewSquare.CurrentPiece?.Team == Piece.TeamColor.White)
+                                ? Brushes.White
+                                : Brushes.Black;
+
+                            rookOldSquare.CurrentPiece = null;
+                        }
+
+                        // Queenside castle
+                        else if (colDifference == -2)
+                        {
+                            Position rookOldPos = new Position(selectedSquare.Position.Row, 0);
+                            Position rookNewPos = new Position(selectedSquare.Position.Row, 3);
+
+                            SquareViewModel rookOldSquare =
+                                BoardSquares.First(s =>
+                                    s.Position.Row == rookOldPos.Row &&
+                                    s.Position.Col == rookOldPos.Col);
+
+                            SquareViewModel rookNewSquare =
+                                BoardSquares.First(s =>
+                                    s.Position.Row == rookNewPos.Row &&
+                                    s.Position.Col == rookNewPos.Col);
+
+                            rookNewSquare.CurrentPiece = gameBoard.GetPiece(rookNewPos);
+                            rookNewSquare.PieceColorBrush =
+                                (rookNewSquare.CurrentPiece?.Team == Piece.TeamColor.White)
+                                ? Brushes.White
+                                : Brushes.Black;
+
+                            rookOldSquare.CurrentPiece = null;
+                        }
+                    }
+
                     // Update Captured Pieces
                     UpdateCapturedPieces();
 
